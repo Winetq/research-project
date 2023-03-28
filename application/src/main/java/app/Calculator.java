@@ -10,7 +10,6 @@ public class Calculator {
     }
 
     public int add() {
-        this.y = -8;
         return x + y;
     }
 
