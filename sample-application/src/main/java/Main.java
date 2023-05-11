@@ -6,6 +6,7 @@ import database.repository.AccountRepository;
 import database.repository.ActionRepository;
 import database.repository.CustomerAccountRefRepository;
 import database.repository.CustomerRepository;
+import ui.MainView;
 
 import java.util.List;
 
@@ -24,5 +25,7 @@ public class Main {
 
         CustomerAccountRefRepository customerAccountRefRepository = new CustomerAccountRefRepository();
         List<CustomerAccountRef> customerAccountRefs = customerAccountRefRepository.getAllCustomerAccountRefs();
+
+        new MainView(accountRepository, actionRepository, customerRepository, customerAccountRefRepository);
     }
 }
