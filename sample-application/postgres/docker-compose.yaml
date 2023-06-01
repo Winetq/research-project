@@ -1,5 +1,16 @@
 version: '3.8'
 services:
+  pgadmin4:
+    image: dpage/pgadmin4
+    volumes:
+      - abd_pga4volume:/var/lib/pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "postgres@example.com"
+      PGADMIN_DEFAULT_PASSWORD: "postgres"
+    networks:
+      - network1
+    ports:
+      - 80:80
   db:
     container_name: postgres
     image: postgres:14.1-alpine
@@ -9,9 +20,16 @@ services:
       - POSTGRES_PASSWORD=postgres
     ports:
       - '5432:5432'
+    networks:
+      - network1
     volumes:
       - db:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 volumes:
   db:
     driver: local
+  abd_pgvolume:
+  abd_pga4volume:
+networks:
+  network1:
+    driver: bridge
