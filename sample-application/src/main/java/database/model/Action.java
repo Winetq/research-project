@@ -11,7 +11,7 @@ public class Action {
     private String type;
     private Long accountId;
     private String status;
-    private Date timestamp;
+    private Date date;
 
     public Action(ResultSet rs) throws SQLException {
         this.id = rs.getLong("id");
@@ -20,7 +20,7 @@ public class Action {
         this.type = rs.getString("type");
         this.accountId = rs.getLong("account_id");
         this.status = rs.getString("status");
-        this.timestamp = rs.getTimestamp("timestamp");
+        this.date = rs.getDate("date");
     }
 
     public String getTitle() {
@@ -63,12 +63,12 @@ public class Action {
         this.status = status;
     }
 
-    public Date getTimestamp() {
-        return timestamp;
+    public Date getDate() {
+        return date;
     }
 
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     @Override
@@ -80,7 +80,7 @@ public class Action {
                 ", type='" + type + '\'' +
                 ", accountId=" + accountId +
                 ", status='" + status + '\'' +
-                ", timestamp=" + timestamp +
+                ", date=" + date +
                 '}';
     }
 }
