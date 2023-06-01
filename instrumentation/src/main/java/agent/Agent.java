@@ -6,7 +6,9 @@ public class Agent {
 
     public static void premain(String agentArgs, Instrumentation inst) {
         System.err.println("[Agent] START");
-        String className = "database.repository.AccountRepository";
+        String className = "org.postgresql.jdbc.PgPreparedStatement";
+    //    String className = "java.sql.PreparedStatement";
+
         transformClass(className, inst);
     }
 

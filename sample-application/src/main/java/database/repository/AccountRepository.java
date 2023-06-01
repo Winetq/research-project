@@ -17,7 +17,7 @@ public class AccountRepository {
 
         try (Connection conn = connection.connect();
              PreparedStatement pstmt = conn.prepareStatement(SQL);
-             ResultSet rs = pstmt.executeQuery();) {
+             ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
                 accountList.add(new Account(rs));
@@ -36,7 +36,7 @@ public class AccountRepository {
 
         try (Connection conn = connection.connect();
              PreparedStatement pstmt = conn.prepareStatement(SQL);
-             ResultSet rs = pstmt.executeQuery();) {
+             ResultSet rs = pstmt.executeQuery()) {
 
             account = new Account(rs);
             return account;
@@ -53,7 +53,7 @@ public class AccountRepository {
 
 
         try (Connection conn = connection.connect();
-             PreparedStatement pstmt = conn.prepareStatement(SQL);){
+             PreparedStatement pstmt = conn.prepareStatement(SQL)){
             pstmt.executeQuery();
         }
         catch (SQLException e) {
