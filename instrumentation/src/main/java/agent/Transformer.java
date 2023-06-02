@@ -37,7 +37,9 @@ public class Transformer implements ClassFileTransformer {
                 CtClass cc = cp.get(targetClassName);
                 CtMethod m = cc.getDeclaredMethod("getAllAccounts");
 
-                m.insertBefore("System.out.println(\"[Agent] I'm here!\");");
+                // m.insertBefore("System.out.println(\"[Agent] I'm here!\");");
+
+                m.insertBefore("agent.Debug.whoAmI();");
 
                 byteCode = cc.toBytecode();
                 cc.detach();
