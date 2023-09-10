@@ -20,7 +20,7 @@ public class Transformer implements ClassFileTransformer {
 
     @Override
     public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) {
-        // System.out.println(className); - shows lots of classes
+        // System.out.println(className); // shows lots of classes
 
         byte[] byteCode = classfileBuffer;
 
@@ -31,11 +31,11 @@ public class Transformer implements ClassFileTransformer {
         }
 
         if (loader.equals(targetClassLoader)) {
-            System.err.println("[Agent] Transforming AccountRepository");
+            System.err.println("[Agent] Transforming");
             try {
                 ClassPool cp = ClassPool.getDefault();
                 CtClass cc = cp.get(targetClassName);
-                CtMethod m = cc.getDeclaredMethod("getAllAccounts");
+                CtMethod m = cc.getDeclaredMethod("prepareStatement");
 
                 // m.insertBefore("System.out.println(\"[Agent] I'm here!\");");
 
@@ -44,7 +44,7 @@ public class Transformer implements ClassFileTransformer {
                 byteCode = cc.toBytecode();
                 cc.detach();
             } catch (Exception e) {
-                System.err.println("[Agent] Exception - Transforming AccountRepository");
+                System.err.println("[Agent] Exception - Transforming");
             }
         }
 
