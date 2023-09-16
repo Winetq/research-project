@@ -8,14 +8,10 @@ import javassist.CtMethod;
 import java.io.ByteArrayInputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
-import java.util.HashSet;
-import java.util.Set;
 
 public class Transformer implements ClassFileTransformer {
     private final String targetClassName;
     private final String targetMethodName;
-
-    private final Set<String> qqq = new HashSet<>();
 
     public Transformer(String targetClassName, String targetMethodName) {
         this.targetClassName = targetClassName.replaceAll("\\.", "/");
@@ -31,31 +27,15 @@ public class Transformer implements ClassFileTransformer {
             System.err.println("[Agent] Transforming");
             try {
                 ClassPool classPool = ClassPool.getDefault();
+                classPool.importPackage("java.util");
                 CtClass ctClass = classPool.makeClass(new ByteArrayInputStream(classfileBuffer));
 
-                CtClass arrListClazz = classPool.get("java.util.ArrayList");
-                CtField ctField = new CtField(arrListClazz, "preparedSqlStatements", ctClass);
+                CtField ctField = CtField.make("private final List preparedSqlStatements = new ArrayList();", ctClass);
                 ctClass.addField(ctField);
 
-                CtField f = new CtField(CtClass.booleanType, "initialized", ctClass);
-                ctClass.addField(f, "false");
-
-                classPool.importPackage("java.util");
-
                 CtMethod ctMethod = ctClass.getDeclaredMethod(targetMethodName);
-
-                ctMethod.insertBefore(
-                        "{" +
-                        "if (!initialized) {" +
-                        "preparedSqlStatements = new ArrayList();" +
-                        "initialized = true;" +
-                        "}" +
-                        "preparedSqlStatements.add($1);" +
-                        "System.err.println(preparedSqlStatements); " +
-                        "}"
-                );
-
-                //  kurr generyki nie sa wspierane XDDD, wszystko jasne
+                ctMethod.insertBefore("{ preparedSqlStatements.add($1);" +
+                        "System.err.println(preparedSqlStatements); }");
 
                 ctClass.writeFile();
                 byteCode = ctClass.toBytecode();
