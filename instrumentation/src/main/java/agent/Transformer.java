@@ -1,11 +1,9 @@
 package agent;
 
-import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.CtField;
-import javassist.CtMethod;
+import javassist.*;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
 
@@ -26,25 +24,29 @@ public class Transformer implements ClassFileTransformer {
         if (className.equals(targetClassName)) {
             System.err.println("[Agent] Transforming");
             try {
-                ClassPool classPool = ClassPool.getDefault();
-                classPool.importPackage("java.util");
-                CtClass ctClass = classPool.makeClass(new ByteArrayInputStream(classfileBuffer));
-
-                CtField ctField = CtField.make("private final List preparedSqlStatements = new ArrayList();", ctClass);
-                ctClass.addField(ctField);
-
-                CtMethod ctMethod = ctClass.getDeclaredMethod(targetMethodName);
-                ctMethod.insertBefore("{ preparedSqlStatements.add($1);" +
-                        "System.err.println(preparedSqlStatements); }");
-
-                ctClass.writeFile();
-                byteCode = ctClass.toBytecode();
-                ctClass.detach();
-            } catch (Exception e) {
+                byteCode = transform(classfileBuffer);
+            } catch (CannotCompileException | IOException | NotFoundException e) {
                 System.err.println(e.getMessage());
             }
         }
 
         return byteCode;
+    }
+
+    private byte[] transform(byte[] classfileBuffer) throws CannotCompileException, IOException, NotFoundException {
+        ClassPool classPool = ClassPool.getDefault();
+        classPool.importPackage("java.util");
+        CtClass ctClass = classPool.makeClass(new ByteArrayInputStream(classfileBuffer));
+
+        CtField ctField = CtField.make("private final List preparedSqlStatements = new ArrayList();", ctClass);
+        ctClass.addField(ctField);
+
+        CtMethod ctMethod = ctClass.getDeclaredMethod(targetMethodName);
+        ctMethod.insertBefore("{ preparedSqlStatements.add($1);" +
+                "System.err.println(preparedSqlStatements); }");
+
+        ctClass.writeFile();
+        ctClass.detach();
+        return ctClass.toBytecode();
     }
 }
