@@ -1,12 +1,13 @@
 package ui;
+
+import database.DatabaseConnection;
 import database.model.Account;
+import database.model.Action;
 import database.model.Customer;
 import database.repository.AccountRepository;
 import database.repository.ActionRepository;
 import database.repository.CustomerAccountRefRepository;
 import database.repository.CustomerRepository;
-
-import database.model.Action;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -14,6 +15,8 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import java.awt.Container;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -116,6 +119,14 @@ public class MainView {
             String actionStatus = addActionStatusTextField.getText();
             String date = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss", Locale.ENGLISH).format(LocalDateTime.now());
             actionRepository.addAction(actionTitle, actionAmount, actionType, actionAccountId, actionStatus, date);
+        });
+
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent windowEvent) {
+                DatabaseConnection.close();
+                System.exit(0);
+            }
         });
 
         // add components

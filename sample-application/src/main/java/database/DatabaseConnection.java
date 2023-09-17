@@ -22,4 +22,12 @@ public class DatabaseConnection {
 
         return connection;
     }
+
+    public static void close() {
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 }
