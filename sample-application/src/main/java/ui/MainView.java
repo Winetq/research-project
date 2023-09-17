@@ -40,20 +40,10 @@ public class MainView {
     private final static String INSERT_ACTION_ACCOUNT_ID = "Account id:";
     private final static String INSERT_ACTION_STATUS = "Status:";
 
-    private final AccountRepository accountRepository;
-    private final ActionRepository actionRepository;
-    private final CustomerRepository customerRepository;
-    private final CustomerAccountRefRepository customerAccountRefRepository;
-
     public MainView(AccountRepository accountRepository,
             ActionRepository actionRepository,
             CustomerRepository customerRepository,
             CustomerAccountRefRepository customerAccountRefRepository) {
-
-        this.accountRepository = accountRepository;
-        this.actionRepository = actionRepository;
-        this.customerRepository = customerRepository;
-        this.customerAccountRefRepository = customerAccountRefRepository;
 
         JFrame frame = new JFrame(FRAME_TITLE);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -115,7 +105,7 @@ public class MainView {
             String actionTitle = addActionTitleTextField.getText();
             int actionAmount = Integer.parseInt(addActionAmountTextField.getText());
             String actionType = addActionTypeTextField.getText();
-            Long actionAccountId = Long.getLong(addActionAccountIdTextField.getText());
+            Long actionAccountId = Long.parseLong(addActionAccountIdTextField.getText());
             String actionStatus = addActionStatusTextField.getText();
             String date = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss", Locale.ENGLISH).format(LocalDateTime.now());
             actionRepository.addAction(actionTitle, actionAmount, actionType, actionAccountId, actionStatus, date);
