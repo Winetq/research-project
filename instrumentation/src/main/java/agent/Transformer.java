@@ -1,6 +1,11 @@
 package agent;
 
-import javassist.*;
+import javassist.CannotCompileException;
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.CtField;
+import javassist.CtMethod;
+import javassist.NotFoundException;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
