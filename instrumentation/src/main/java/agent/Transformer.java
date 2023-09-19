@@ -40,15 +40,22 @@ public class Transformer implements ClassFileTransformer {
 
     private byte[] transform(byte[] classfileBuffer) throws CannotCompileException, IOException, NotFoundException {
         ClassPool classPool = ClassPool.getDefault();
-        classPool.importPackage("java.util");
+        classPool.importPackage("java.util.concurrent");
         CtClass ctClass = classPool.makeClass(new ByteArrayInputStream(classfileBuffer));
 
-        CtField ctField = CtField.make("private final List preparedSqlStatements = new ArrayList();", ctClass);
-        ctClass.addField(ctField);
+        CtField ctFieldStart = new CtField(CtClass.longType, "start", ctClass);
+        CtField ctFieldFinish = new CtField(CtClass.longType, "finish", ctClass);
+        CtField ctFieldTimeElapsed = new CtField(CtClass.longType, "timeElapsed", ctClass);
+        ctClass.addField(ctFieldStart);
+        ctClass.addField(ctFieldFinish);
+        ctClass.addField(ctFieldTimeElapsed);
 
         CtMethod ctMethod = ctClass.getDeclaredMethod(targetMethodName);
-        ctMethod.insertBefore("{ preparedSqlStatements.add($1);" +
-                "System.err.println(preparedSqlStatements); }");
+        ctMethod.insertAt(189,"start = System.nanoTime();");
+        ctMethod.insertAt(191,"{ finish = System.nanoTime();" +
+                "timeElapsed = finish - start;" +
+                "System.err.println(preparedQuery.query + \" executed in \"" +
+                " + TimeUnit.NANOSECONDS.toMicros(timeElapsed) + \" microseconds\"); }");
 
         ctClass.writeFile();
         ctClass.detach();
