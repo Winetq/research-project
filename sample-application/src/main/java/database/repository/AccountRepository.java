@@ -3,21 +3,24 @@ package database.repository;
 import database.DatabaseConnection;
 import database.model.Account;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AccountRepository {
 
-    private DatabaseConnection connection = new DatabaseConnection();
+    private final Connection connection = DatabaseConnection.connect();
 
     public List<Account> getAllAccounts() {
         String SQL = "SELECT * FROM account";
         List<Account> accountList = new ArrayList<>();
 
-        try (Connection conn = connection.connect();
-             PreparedStatement pstmt = conn.prepareStatement(SQL);
-             ResultSet rs = pstmt.executeQuery();) {
+        try (PreparedStatement pstmt = connection.prepareStatement(SQL);
+             ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
                 accountList.add(new Account(rs));
@@ -26,38 +29,39 @@ public class AccountRepository {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+
         return accountList;
     }
 
 
     public Account getAccountById(Long id) {
         String SQL = "SELECT * FROM account WHERE id=" + id;
-        Account account;
+        Account account = null;
 
-        try (Connection conn = connection.connect();
-             PreparedStatement pstmt = conn.prepareStatement(SQL);
-             ResultSet rs = pstmt.executeQuery();) {
+        try (PreparedStatement pstmt = connection.prepareStatement(SQL);
+             ResultSet rs = pstmt.executeQuery()) {
 
             account = new Account(rs);
-            return account;
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return null;
         }
+
+        return account;
     }
 
     public void addAccount(int balance, String creationDate) {
+        List<Account> accountList = getAllAccounts();
+        long newId = accountList.get(accountList.size() - 1).getId() + 1;
         String SQL = "INSERT INTO account (id, balance, creation_date) " +
-            "VALUES("+ System.currentTimeMillis() + ", " + balance + ", '" + Timestamp.valueOf(creationDate) + "')";
+            "VALUES("+ newId + ", " + balance + ", '" + Timestamp.valueOf(creationDate) + "')";
 
-
-        try (Connection conn = connection.connect();
-             PreparedStatement pstmt = conn.prepareStatement(SQL);){
+        try (PreparedStatement pstmt = connection.prepareStatement(SQL)) {
             pstmt.executeQuery();
         }
         catch (SQLException e) {
             System.out.println(e.getMessage());
         }
     }
+
 }

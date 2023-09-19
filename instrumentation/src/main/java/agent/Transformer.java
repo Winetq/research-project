@@ -1,53 +1,57 @@
 package agent;
 
+import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
+import javassist.CtField;
 import javassist.CtMethod;
+import javassist.NotFoundException;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
 
 public class Transformer implements ClassFileTransformer {
-
     private final String targetClassName;
+    private final String targetMethodName;
 
-    private final ClassLoader targetClassLoader;
-
-    public Transformer(String targetClassName, ClassLoader targetClassLoader) {
-        this.targetClassName = targetClassName;
-        this.targetClassLoader = targetClassLoader;
+    public Transformer(String targetClassName, String targetMethodName) {
+        this.targetClassName = targetClassName.replaceAll("\\.", "/");
+        this.targetMethodName = targetMethodName;
     }
 
     @Override
-    public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) {
-        // System.out.println(className); // shows lots of classes
-
+    public byte[] transform(ClassLoader loader, String className, Class classBeingRedefined,
+                            ProtectionDomain protectionDomain, byte[] classfileBuffer) {
         byte[] byteCode = classfileBuffer;
 
-        String finalTargetClassName = this.targetClassName.replaceAll("\\.", "/");
-
-        if (!className.equals(finalTargetClassName)) {
-            return byteCode;
-        }
-
-        if (loader.equals(targetClassLoader)) {
+        if (className.equals(targetClassName)) {
             System.err.println("[Agent] Transforming");
             try {
-                ClassPool cp = ClassPool.getDefault();
-                CtClass cc = cp.get(targetClassName);
-                CtMethod m = cc.getDeclaredMethod("prepareStatement");
-
-                // m.insertBefore("System.out.println(\"[Agent] I'm here!\");");
-
-                m.insertBefore("agent.Debug.whoAmI();");
-
-                byteCode = cc.toBytecode();
-                cc.detach();
-            } catch (Exception e) {
-                System.err.println("[Agent] Exception - Transforming");
+                byteCode = transform(classfileBuffer);
+            } catch (CannotCompileException | IOException | NotFoundException e) {
+                System.err.println(e.getMessage());
             }
         }
 
         return byteCode;
+    }
+
+    private byte[] transform(byte[] classfileBuffer) throws CannotCompileException, IOException, NotFoundException {
+        ClassPool classPool = ClassPool.getDefault();
+        classPool.importPackage("java.util");
+        CtClass ctClass = classPool.makeClass(new ByteArrayInputStream(classfileBuffer));
+
+        CtField ctField = CtField.make("private final List preparedSqlStatements = new ArrayList();", ctClass);
+        ctClass.addField(ctField);
+
+        CtMethod ctMethod = ctClass.getDeclaredMethod(targetMethodName);
+        ctMethod.insertBefore("{ preparedSqlStatements.add($1);" +
+                "System.err.println(preparedSqlStatements); }");
+
+        ctClass.writeFile();
+        ctClass.detach();
+        return ctClass.toBytecode();
     }
 }

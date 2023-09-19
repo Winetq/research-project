@@ -1,15 +1,22 @@
 package ui;
+
+import database.DatabaseConnection;
 import database.model.Account;
+import database.model.Action;
 import database.model.Customer;
 import database.repository.AccountRepository;
 import database.repository.ActionRepository;
 import database.repository.CustomerAccountRefRepository;
 import database.repository.CustomerRepository;
 
-import database.model.Action;
-
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.SpringLayout;
+import java.awt.Container;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -17,37 +24,26 @@ import java.util.Locale;
 
 public class MainView {
 
-    final static String FRAME_TITLE = "Banking app";
-    final static String INSERT_ACCOUNT = "Create new account";
-    final static String INSERT_ACCOUNT_BALANCE = "Balance:";
-    final static String SELECT_ALL_ACCOUNTS = "Select all accounts";
-    final static String SELECT_ALL_CUSTOMERS = "Select all customers";
-    final static String SELECT_ALL_ACTIONS = "Select all actions";
-    final static String CREATE = "Create";
+    private final static String FRAME_TITLE = "Banking app";
+    private final static String INSERT_ACCOUNT = "Create new account";
+    private final static String INSERT_ACCOUNT_BALANCE = "Balance:";
+    private final static String SELECT_ALL_ACCOUNTS = "Select all accounts";
+    private final static String SELECT_ALL_CUSTOMERS = "Select all customers";
+    private final static String SELECT_ALL_ACTIONS = "Select all actions";
+    private final static String CREATE = "Create";
 
-    final static String ACTION_SECTION = "Action";
-    final static String INSERT_ACTION = "Create new action";
-    final static String INSERT_ACTION_TITLE = "Title:";
-    final static String INSERT_ACTION_AMOUNT = "Amount:";
-    final static String INSERT_ACTION_TYPE = "Type:";
-    final static String INSERT_ACTION_ACCOUNT_ID = "Account id:";
-    final static String INSERT_ACTION_STATUS = "Status:";
-
-    AccountRepository accountRepository;
-    ActionRepository actionRepository;
-    CustomerRepository customerRepository;
-    CustomerAccountRefRepository customerAccountRefRepository;
-
+    private final static String ACTION_SECTION = "Action";
+    private final static String INSERT_ACTION = "Create new action";
+    private final static String INSERT_ACTION_TITLE = "Title:";
+    private final static String INSERT_ACTION_AMOUNT = "Amount:";
+    private final static String INSERT_ACTION_TYPE = "Type:";
+    private final static String INSERT_ACTION_ACCOUNT_ID = "Account id:";
+    private final static String INSERT_ACTION_STATUS = "Status:";
 
     public MainView(AccountRepository accountRepository,
             ActionRepository actionRepository,
             CustomerRepository customerRepository,
             CustomerAccountRefRepository customerAccountRefRepository) {
-
-        this.accountRepository = accountRepository;
-        this.actionRepository = actionRepository;
-        this.customerRepository = customerRepository;
-        this.customerAccountRefRepository = customerAccountRefRepository;
 
         JFrame frame = new JFrame(FRAME_TITLE);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -58,7 +54,7 @@ public class MainView {
 
         // Components
 
-        // select * (account, customers, actions)
+        // select * (accounts, customers, actions)
         JButton selectAllAccountsButton = new JButton(SELECT_ALL_ACCOUNTS);
         JButton selectAllCustomersButton = new JButton(SELECT_ALL_CUSTOMERS);
         JButton selectAllActionsButton = new JButton(SELECT_ALL_ACTIONS);
@@ -69,8 +65,7 @@ public class MainView {
         JTextField addAccountBalanceTextField = new JTextField("", 10);
         JButton addAccountButton = new JButton(CREATE);
 
-
-        // insert account
+        // insert action
         JLabel addActionLabel = new JLabel(INSERT_ACTION);
         JLabel addActionTitleLabel = new JLabel(INSERT_ACTION_TITLE);
         JTextField addActionTitleTextField = new JTextField("", 30);
@@ -82,11 +77,9 @@ public class MainView {
         JTextField addActionAccountIdTextField = new JTextField("", 30);
         JLabel addActionStatusLabel = new JLabel(INSERT_ACTION_STATUS);
         JTextField addActionStatusTextField = new JTextField("", 30);
-        
         JButton addActionButton = new JButton(CREATE);
 
-
-
+        // add listeners
         selectAllAccountsButton.addActionListener(e -> {
             List<Account> accountList = accountRepository.getAllAccounts();
             System.out.println(accountList);
@@ -102,7 +95,6 @@ public class MainView {
             System.out.println(actionList);
         });
 
-
         addAccountButton.addActionListener(e -> {
             int accountBalance = Integer.parseInt(addAccountBalanceTextField.getText());
             String date = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss", Locale.ENGLISH).format(LocalDateTime.now());
@@ -113,21 +105,29 @@ public class MainView {
             String actionTitle = addActionTitleTextField.getText();
             int actionAmount = Integer.parseInt(addActionAmountTextField.getText());
             String actionType = addActionTypeTextField.getText();
-            Long actionAccountId = Long.getLong(addActionAccountIdTextField.getText());
+            Long actionAccountId = Long.parseLong(addActionAccountIdTextField.getText());
             String actionStatus = addActionStatusTextField.getText();
             String date = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss", Locale.ENGLISH).format(LocalDateTime.now());
             actionRepository.addAction(actionTitle, actionAmount, actionType, actionAccountId, actionStatus, date);
         });
 
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent windowEvent) {
+                DatabaseConnection.close();
+                System.exit(0);
+            }
+        });
 
+        // add components
         contentPane.add(addAccountLabel);
         contentPane.add(addAccountBalanceLabel);
         contentPane.add(addAccountBalanceTextField);
         contentPane.add(addAccountButton);
 
         contentPane.add(selectAllAccountsButton);
-        contentPane.add(selectAllActionsButton);
         contentPane.add(selectAllCustomersButton);
+        contentPane.add(selectAllActionsButton);
 
         contentPane.add(addActionLabel);
         contentPane.add(addActionTitleLabel);
@@ -140,12 +140,11 @@ public class MainView {
         contentPane.add(addActionAccountIdTextField);
         contentPane.add(addActionStatusLabel);
         contentPane.add(addActionStatusTextField);
-
         contentPane.add(addActionButton);
 
         // Constraints
 
-        // select * (account, customers, actions)
+        // select * (accounts, customers, actions)
         layout.putConstraint(SpringLayout.NORTH, selectAllAccountsButton, 16, SpringLayout.NORTH, contentPane);
         layout.putConstraint(SpringLayout.WEST, selectAllAccountsButton, 16, SpringLayout.WEST, contentPane);
 
@@ -207,17 +206,13 @@ public class MainView {
         layout.putConstraint(SpringLayout.WEST, addActionStatusTextField,6,SpringLayout.EAST, addActionAccountIdLabel);
         layout.putConstraint(SpringLayout.NORTH, addActionStatusTextField,16,SpringLayout.SOUTH, addActionAccountIdLabel);
 
+
         layout.putConstraint(SpringLayout.WEST, addActionButton,6,SpringLayout.EAST, addActionAccountIdLabel);
         layout.putConstraint(SpringLayout.NORTH, addActionButton,16,SpringLayout.SOUTH, addActionStatusLabel);
-
-
 
         // contentPane
         layout.putConstraint(SpringLayout.EAST, contentPane,16,SpringLayout.EAST, addActionAccountIdTextField);
         layout.putConstraint(SpringLayout.SOUTH, contentPane,16,SpringLayout.SOUTH, addActionButton);
-
-
-
 
         frame.pack();
         frame.setVisible(true);

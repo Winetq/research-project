@@ -1,7 +1,6 @@
 package database.repository;
 
 import database.DatabaseConnection;
-import database.model.Action;
 import database.model.CustomerAccountRef;
 
 import java.sql.Connection;
@@ -9,27 +8,27 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class CustomerAccountRefRepository {
 
-    private DatabaseConnection connection = new DatabaseConnection();
+    private final Connection connection = DatabaseConnection.connect();
 
     public List<CustomerAccountRef> getAllCustomerAccountRefs() {
         String SQL = "SELECT * FROM Customer_Account_ref";
         List<CustomerAccountRef> customerAccountRefList = new ArrayList<>();
 
-        try (Connection conn = connection.connect();
-             PreparedStatement pstmt = conn.prepareStatement(SQL);
+        try (PreparedStatement pstmt = connection.prepareStatement(SQL);
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
                 customerAccountRefList.add(new CustomerAccountRef(rs));
             }
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+
         return customerAccountRefList;
     }
 
@@ -37,9 +36,8 @@ public class CustomerAccountRefRepository {
         String SQL = "SELECT * FROM Customer_Account_ref WHERE customerId=" + customerId;
         List<CustomerAccountRef> customerAccountRefListList = new ArrayList<>();
 
-        try (Connection conn = connection.connect();
-             PreparedStatement pstmt = conn.prepareStatement(SQL);
-             ResultSet rs = pstmt.executeQuery();) {
+        try (PreparedStatement pstmt = connection.prepareStatement(SQL);
+             ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
                 customerAccountRefListList.add(new CustomerAccountRef(rs));
@@ -47,8 +45,8 @@ public class CustomerAccountRefRepository {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return null;
         }
+
         return customerAccountRefListList;
     }
 
@@ -56,9 +54,8 @@ public class CustomerAccountRefRepository {
         String SQL = "SELECT * FROM Customer_Account_ref WHERE accountId=" + accountId;
         List<CustomerAccountRef> customerAccountRefListList = new ArrayList<>();
 
-        try (Connection conn = connection.connect();
-             PreparedStatement pstmt = conn.prepareStatement(SQL);
-             ResultSet rs = pstmt.executeQuery();) {
+        try (PreparedStatement pstmt = connection.prepareStatement(SQL);
+             ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
                 customerAccountRefListList.add(new CustomerAccountRef(rs));
@@ -66,8 +63,8 @@ public class CustomerAccountRefRepository {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return null;
         }
+
         return customerAccountRefListList;
     }
 
@@ -75,12 +72,12 @@ public class CustomerAccountRefRepository {
         String SQL = "INSERT INTO Customer_Account_ref (customer_id, account_id) " +
                 "VALUES(" + customerId + ", " + accountId + ")";
 
-        try (Connection conn = connection.connect();
-             PreparedStatement pstmt = conn.prepareStatement(SQL);){
+        try (PreparedStatement pstmt = connection.prepareStatement(SQL)) {
             pstmt.executeQuery();
         }
         catch (SQLException e) {
             System.out.println(e.getMessage());
         }
     }
+
 }

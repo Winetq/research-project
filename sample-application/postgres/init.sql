@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS Action (
    type text,
    account_id bigint,
    status text,
-   timestamp date,
+   date timestamp,
    FOREIGN KEY (account_id)
        REFERENCES Account (id)
 );
