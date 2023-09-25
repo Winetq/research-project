@@ -1,11 +1,6 @@
 package agent;
 
-import javassist.CannotCompileException;
-import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.CtField;
-import javassist.CtMethod;
-import javassist.NotFoundException;
+import javassist.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -40,20 +35,39 @@ public class Transformer implements ClassFileTransformer {
 
     private byte[] transform(byte[] classfileBuffer) throws CannotCompileException, IOException, NotFoundException {
         ClassPool classPool = ClassPool.getDefault();
+        classPool.importPackage("java.util");
         classPool.importPackage("java.util.concurrent");
         CtClass ctClass = classPool.makeClass(new ByteArrayInputStream(classfileBuffer));
 
         CtField ctFieldStart = new CtField(CtClass.longType, "start", ctClass);
-        CtField ctFieldFinish = new CtField(CtClass.longType, "finish", ctClass);
-        CtField ctFieldTimeElapsed = new CtField(CtClass.longType, "timeElapsed", ctClass);
         ctClass.addField(ctFieldStart);
+        CtField ctFieldFinish = new CtField(CtClass.longType, "finish", ctClass);
         ctClass.addField(ctFieldFinish);
+        CtField ctFieldTimeElapsed = new CtField(CtClass.longType, "timeElapsed", ctClass);
         ctClass.addField(ctFieldTimeElapsed);
+        CtField ctField = CtField.make("private final static Map queryToTimeElapsed = new HashMap();", ctClass);
+        ctClass.addField(ctField);
+
+        CtMethod ctMethodPut = CtNewMethod.make(
+                "private void put(String query, long timeElapsed) {" +
+                        "List timeElapsedList;" +
+                        "if (queryToTimeElapsed.containsKey(query)) {" +
+                        "timeElapsedList = (List)queryToTimeElapsed.get(query);" +
+                        "} else {" +
+                        "timeElapsedList = new ArrayList();" +
+                        "}" +
+                        "timeElapsedList.add(String.valueOf(timeElapsed));" +
+                        "queryToTimeElapsed.put(query, timeElapsedList);" +
+                        "System.err.println(queryToTimeElapsed);" +
+                        "}",
+                ctClass);
+        ctClass.addMethod(ctMethodPut);
 
         CtMethod ctMethod = ctClass.getDeclaredMethod(targetMethodName);
         ctMethod.insertAt(189,"start = System.nanoTime();");
         ctMethod.insertAt(191,"{ finish = System.nanoTime();" +
                 "timeElapsed = finish - start;" +
+                "put(preparedQuery.query.toString(), TimeUnit.NANOSECONDS.toMicros(timeElapsed));" +
                 "System.err.println(preparedQuery.query + \" executed in \"" +
                 " + TimeUnit.NANOSECONDS.toMicros(timeElapsed) + \" microseconds\"); }");
 
