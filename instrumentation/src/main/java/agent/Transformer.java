@@ -64,6 +64,7 @@ public class Transformer implements ClassFileTransformer {
                         "}" +
                         "timeElapsedList.add(String.valueOf(timeElapsed));" +
                         "queryToTimeElapsed.put(query, timeElapsedList);" +
+                        "agent.Test.put(query, timeElapsed);" +
                         "System.err.println(queryToTimeElapsed);" +
                         "}",
                 ctClass);
