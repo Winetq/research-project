@@ -87,7 +87,8 @@ public class ActionRepository {
 
     public void addAction(String title, int amount, String type, Long accountId, String status, String date) throws SQLException {
         String SQL = "INSERT INTO Action (title, amount, type, account_id, status, date) " +
-                "VALUES('" + title + "', " + amount + ", '" + type + "', " + accountId + ", '" + status+ "', '" + Timestamp.valueOf(date) + "')";
+                "VALUES('" + title + "', " + amount + ", '" + type + "', " + accountId
+                + ", '" + status+ "', '" + Timestamp.valueOf(date) + "')";
 
         boolean isCurrencyTransfer = type.equals("Przelew walutowy");
 
@@ -96,7 +97,8 @@ public class ActionRepository {
             int currencyTransferCommission = 2;
             String commissionTitle = "Prowizja za przelew walutowy " + title;
             String commissionSQL = "INSERT INTO Action (title, amount, type, account_id, status, date) " +
-                    "VALUES('" + commissionTitle + "', " + currencyTransferCommission + ", '" + type + "', " + accountId + ", '" + status+ "', '" + Timestamp.valueOf(date) + "')";
+                    "VALUES('" + commissionTitle + "', " + currencyTransferCommission + ", '" + type + "', "
+                    + accountId + ", '" + status+ "', '" + Timestamp.valueOf(date) + "')";
 
             try (PreparedStatement pstmt = connection.prepareStatement(SQL);
                  PreparedStatement pstmtCommission = connection.prepareStatement(commissionSQL)) {
