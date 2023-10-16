@@ -85,16 +85,39 @@ public class ActionRepository {
         return actionList;
     }
 
-    public void addAction(String title, int amount, String type, Long accountId, String status, String date) {
+    public void addAction(String title, int amount, String type, Long accountId, String status, String date) throws SQLException {
         String SQL = "INSERT INTO Action (title, amount, type, account_id, status, date) " +
                 "VALUES('" + title + "', " + amount + ", '" + type + "', " + accountId + ", '" + status+ "', '" + Timestamp.valueOf(date) + "')";
 
-        try (PreparedStatement pstmt = connection.prepareStatement(SQL)) {
-            pstmt.executeQuery();
+        boolean isCurrencyTransfer = type.equals("Przelew walutowy");
+
+        if (isCurrencyTransfer) {
+            connection.setAutoCommit(false);
+            int currencyTransferCommission = 2;
+            String commissionTitle = "Prowizja za przelew walutowy " + title;
+            String commissionSQL = "INSERT INTO Action (title, amount, type, account_id, status, date) " +
+                    "VALUES('" + commissionTitle + "', " + currencyTransferCommission + ", '" + type + "', " + accountId + ", '" + status+ "', '" + Timestamp.valueOf(date) + "')";
+
+            try (PreparedStatement pstmt = connection.prepareStatement(SQL);
+                 PreparedStatement pstmtCommission = connection.prepareStatement(commissionSQL)) {
+                pstmt.execute();
+                pstmtCommission.execute();
+                connection.commit();
+            }
+            catch (SQLException e) {
+                System.out.println(e.getMessage());
+            } finally {
+                connection.setAutoCommit(true);
+            }
+        } else {
+            try (PreparedStatement pstmt = connection.prepareStatement(SQL)) {
+                pstmt.executeQuery();
+            }
+            catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
         }
-        catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+
     }
 
 }
