@@ -67,7 +67,7 @@ public class AccountRepository {
     }
 
     public void deleteAccount(Long id) {
-        String SQL = "DELETE FROM Account WHERE id =" + id;
+        String SQL = "DELETE FROM Account WHERE id=" + id;
 
         try (PreparedStatement pstmt = connection.prepareStatement(SQL)) {
             pstmt.executeQuery();

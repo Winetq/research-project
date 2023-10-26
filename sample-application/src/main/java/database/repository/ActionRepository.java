@@ -90,7 +90,7 @@ public class ActionRepository {
                 "VALUES('" + title + "', " + amount + ", '" + type + "', " + accountId
                 + ", '" + status+ "', '" + Timestamp.valueOf(date) + "')";
         String updateAccountSQL = "UPDATE Account SET balance=balance+" +
-                amount + "WHERE id=" + accountId;
+                amount + " WHERE id=" + accountId;
 
         connection.setAutoCommit(false);
 
@@ -98,7 +98,7 @@ public class ActionRepository {
 
         if (isCurrencyTransfer) {
             int currencyTransferCommission = 2;
-            String commissionTitle = "Prowizja za przelew walutowy " + title;
+            String commissionTitle = "Prowizja za przelew walutowy: " + title;
             String commissionSQL = "INSERT INTO Action (title, amount, type, account_id, status, date) " +
                     "VALUES('" + commissionTitle + "', " + currencyTransferCommission + ", '" + type + "', "
                     + accountId + ", '" + status+ "', '" + Timestamp.valueOf(date) + "')";
