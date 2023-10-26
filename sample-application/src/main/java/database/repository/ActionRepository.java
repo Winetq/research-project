@@ -89,35 +89,38 @@ public class ActionRepository {
         String SQL = "INSERT INTO Action (title, amount, type, account_id, status, date) " +
                 "VALUES('" + title + "', " + amount + ", '" + type + "', " + accountId
                 + ", '" + status+ "', '" + Timestamp.valueOf(date) + "')";
+        String updateAccountSQL = "UPDATE Account SET balance=balance+" +
+                amount + "WHERE id=" + accountId;
+
+        connection.setAutoCommit(false);
 
         boolean isCurrencyTransfer = type.equals("Przelew walutowy");
 
         if (isCurrencyTransfer) {
-            connection.setAutoCommit(false);
             int currencyTransferCommission = 2;
             String commissionTitle = "Prowizja za przelew walutowy " + title;
             String commissionSQL = "INSERT INTO Action (title, amount, type, account_id, status, date) " +
                     "VALUES('" + commissionTitle + "', " + currencyTransferCommission + ", '" + type + "', "
                     + accountId + ", '" + status+ "', '" + Timestamp.valueOf(date) + "')";
 
-            try (PreparedStatement pstmt = connection.prepareStatement(SQL);
-                 PreparedStatement pstmtCommission = connection.prepareStatement(commissionSQL)) {
-                pstmt.execute();
+            try (PreparedStatement pstmtCommission = connection.prepareStatement(commissionSQL)) {
                 pstmtCommission.execute();
-                connection.commit();
-            }
-            catch (SQLException e) {
-                System.out.println(e.getMessage());
-            } finally {
-                connection.setAutoCommit(true);
-            }
-        } else {
-            try (PreparedStatement pstmt = connection.prepareStatement(SQL)) {
-                pstmt.executeQuery();
             }
             catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
+        }
+
+        try (PreparedStatement pstmt = connection.prepareStatement(SQL);
+             PreparedStatement pstmtAccount = connection.prepareStatement(updateAccountSQL)) {
+            pstmt.execute();
+            pstmtAccount.execute();
+            connection.commit();
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            connection.setAutoCommit(true);
         }
 
     }
