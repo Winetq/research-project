@@ -85,16 +85,44 @@ public class ActionRepository {
         return actionList;
     }
 
-    public void addAction(String title, int amount, String type, Long accountId, String status, String date) {
+    public void addAction(String title, int amount, String type, Long accountId, String status, String date) throws SQLException {
         String SQL = "INSERT INTO Action (title, amount, type, account_id, status, date) " +
-                "VALUES('" + title + "', " + amount + ", '" + type + "', " + accountId + ", '" + status+ "', '" + Timestamp.valueOf(date) + "')";
+                "VALUES('" + title + "', " + amount + ", '" + type + "', " + accountId
+                + ", '" + status+ "', '" + Timestamp.valueOf(date) + "')";
+        String updateAccountSQL = "UPDATE Account SET balance=balance+" +
+                amount + " WHERE id=" + accountId;
 
-        try (PreparedStatement pstmt = connection.prepareStatement(SQL)) {
-            pstmt.executeQuery();
+        connection.setAutoCommit(false);
+
+        boolean isCurrencyTransfer = type.equals("Przelew walutowy");
+
+        if (isCurrencyTransfer) {
+            int currencyTransferCommission = 2;
+            String commissionTitle = "Prowizja za przelew walutowy: " + title;
+            String commissionSQL = "INSERT INTO Action (title, amount, type, account_id, status, date) " +
+                    "VALUES('" + commissionTitle + "', " + currencyTransferCommission + ", '" + type + "', "
+                    + accountId + ", '" + status+ "', '" + Timestamp.valueOf(date) + "')";
+
+            try (PreparedStatement pstmtCommission = connection.prepareStatement(commissionSQL)) {
+                pstmtCommission.execute();
+            }
+            catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
+        try (PreparedStatement pstmt = connection.prepareStatement(SQL);
+             PreparedStatement pstmtAccount = connection.prepareStatement(updateAccountSQL)) {
+            pstmt.execute();
+            pstmtAccount.execute();
+            connection.commit();
         }
         catch (SQLException e) {
             System.out.println(e.getMessage());
+        } finally {
+            connection.setAutoCommit(true);
         }
+
     }
 
 }

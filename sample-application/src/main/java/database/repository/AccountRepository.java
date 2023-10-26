@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class AccountRepository {
 
@@ -52,7 +53,8 @@ public class AccountRepository {
 
     public void addAccount(int balance, String creationDate) {
         List<Account> accountList = getAllAccounts();
-        long newId = accountList.get(accountList.size() - 1).getId() + 1;
+        Optional<Long> maxId = accountList.stream().map(Account::getId).max(Long::compare);
+        Long newId = maxId.map(id -> id + 1).orElse(1L);
         String SQL = "INSERT INTO account (id, balance, creation_date) " +
             "VALUES("+ newId + ", " + balance + ", '" + Timestamp.valueOf(creationDate) + "')";
 
@@ -64,4 +66,14 @@ public class AccountRepository {
         }
     }
 
+    public void deleteAccount(Long id) {
+        String SQL = "DELETE FROM Account WHERE id=" + id;
+
+        try (PreparedStatement pstmt = connection.prepareStatement(SQL)) {
+            pstmt.executeQuery();
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 }

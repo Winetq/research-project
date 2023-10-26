@@ -9,14 +9,11 @@ import database.repository.ActionRepository;
 import database.repository.CustomerAccountRefRepository;
 import database.repository.CustomerRepository;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.SpringLayout;
+import javax.swing.*;
 import java.awt.Container;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -39,6 +36,8 @@ public class MainView {
     private final static String INSERT_ACTION_TYPE = "Type:";
     private final static String INSERT_ACTION_ACCOUNT_ID = "Account id:";
     private final static String INSERT_ACTION_STATUS = "Status:";
+
+    String[] actionTypes = { "Przelew krajowy", "Przelew walutowy", "BLIK" };
 
     public MainView(AccountRepository accountRepository,
             ActionRepository actionRepository,
@@ -72,7 +71,7 @@ public class MainView {
         JLabel addActionAmountLabel = new JLabel(INSERT_ACTION_AMOUNT);
         JTextField addActionAmountTextField = new JTextField("", 30);
         JLabel addActionTypeLabel = new JLabel(INSERT_ACTION_TYPE);
-        JTextField addActionTypeTextField = new JTextField("", 30);
+        JComboBox addActionTypeComboBox = new JComboBox(actionTypes);
         JLabel addActionAccountIdLabel = new JLabel(INSERT_ACTION_ACCOUNT_ID);
         JTextField addActionAccountIdTextField = new JTextField("", 30);
         JLabel addActionStatusLabel = new JLabel(INSERT_ACTION_STATUS);
@@ -104,11 +103,16 @@ public class MainView {
         addActionButton.addActionListener(e -> {
             String actionTitle = addActionTitleTextField.getText();
             int actionAmount = Integer.parseInt(addActionAmountTextField.getText());
-            String actionType = addActionTypeTextField.getText();
+            String actionType = (String)addActionTypeComboBox.getSelectedItem();
             Long actionAccountId = Long.parseLong(addActionAccountIdTextField.getText());
             String actionStatus = addActionStatusTextField.getText();
             String date = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss", Locale.ENGLISH).format(LocalDateTime.now());
-            actionRepository.addAction(actionTitle, actionAmount, actionType, actionAccountId, actionStatus, date);
+            actionType = actionType != null ? actionType : "";
+            try {
+                actionRepository.addAction(actionTitle, actionAmount, actionType, actionAccountId, actionStatus, date);
+            } catch (SQLException throwable) {
+                throwable.printStackTrace();
+            }
         });
 
         frame.addWindowListener(new WindowAdapter() {
@@ -135,7 +139,7 @@ public class MainView {
         contentPane.add(addActionAmountLabel);
         contentPane.add(addActionAmountTextField);
         contentPane.add(addActionTypeLabel);
-        contentPane.add(addActionTypeTextField);
+        contentPane.add(addActionTypeComboBox);
         contentPane.add(addActionAccountIdLabel);
         contentPane.add(addActionAccountIdTextField);
         contentPane.add(addActionStatusLabel);
@@ -189,8 +193,8 @@ public class MainView {
         layout.putConstraint(SpringLayout.WEST, addActionTypeLabel,16,SpringLayout.WEST, contentPane);
         layout.putConstraint(SpringLayout.NORTH, addActionTypeLabel,16,SpringLayout.SOUTH, addActionAmountLabel);
 
-        layout.putConstraint(SpringLayout.WEST, addActionTypeTextField,6,SpringLayout.EAST, addActionAccountIdLabel);
-        layout.putConstraint(SpringLayout.NORTH, addActionTypeTextField,16,SpringLayout.SOUTH, addActionAmountLabel);
+        layout.putConstraint(SpringLayout.WEST, addActionTypeComboBox,6,SpringLayout.EAST, addActionAccountIdLabel);
+        layout.putConstraint(SpringLayout.NORTH, addActionTypeComboBox,16,SpringLayout.SOUTH, addActionAmountLabel);
 
 
         layout.putConstraint(SpringLayout.WEST, addActionAccountIdLabel,16,SpringLayout.WEST, contentPane);
