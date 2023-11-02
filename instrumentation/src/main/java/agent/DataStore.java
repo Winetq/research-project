@@ -11,21 +11,20 @@ import net.sf.jsqlparser.util.deparser.StatementDeParser;
 
 import java.util.*;
 
-
 public class DataStore {
     private final static Map<String, List<Long>> queryToTimeElapsed = new HashMap<>();
     private static final String QUESTION_MARK = "?";
 
     public static void put(String query, long timeElapsed) {
-        String queryWithWildCards = replaceParameters(query);
-        List<Long> timeElapsedList = queryToTimeElapsed.computeIfAbsent(queryWithWildCards, k -> new ArrayList<>());
+        String queryWithWildcards = replaceParameters(query);
+        List<Long> timeElapsedList = queryToTimeElapsed.computeIfAbsent(queryWithWildcards, k -> new ArrayList<>());
         timeElapsedList.add(timeElapsed);
-        queryToTimeElapsed.put(queryWithWildCards, timeElapsedList);
+        queryToTimeElapsed.put(queryWithWildcards, timeElapsedList);
         System.err.println(queryToTimeElapsed);
-        System.err.println(queryWithWildCards + " executed in " + timeElapsed + " microseconds");
+        System.err.println(query + " executed in " + timeElapsed + " microseconds");
     }
 
-    static String replaceParameters(String sql) {
+    public static String replaceParameters(String sql) {
         StringBuilder buffer = new StringBuilder();
         ExpressionDeParser expressionDeParser = new ExpressionDeParser() {
             @Override
@@ -52,7 +51,7 @@ public class DataStore {
             public void visit(EqualsTo equalsTo) {
 
                 if(Objects.equals(equalsTo.getRightExpression().toString().toLowerCase(), Boolean.TRUE.toString()) ||
-                        Objects.equals(equalsTo.getRightExpression().toString().toLowerCase(), Boolean.FALSE.toString()) ) {
+                        Objects.equals(equalsTo.getRightExpression().toString().toLowerCase(), Boolean.FALSE.toString())) {
                     equalsTo.setRightExpression(new StringValue(QUESTION_MARK));
                 }
                 super.visit(equalsTo);
