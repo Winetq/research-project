@@ -12,15 +12,19 @@ import net.sf.jsqlparser.util.deparser.StatementDeParser;
 import java.util.*;
 
 public class DataStore {
-    private final static Map<String, List<Long>> queryToTimeElapsed = new HashMap<>();
+    private static final Map<String, List<Long>> queryToTimeElapsed = new HashMap<>();
     private static final String QUESTION_MARK = "?";
+    private static String transaction = "";
+    private static long transactionTimeElapsed = 0;
 
-    public static void put(String query, long timeElapsed) {
+    public static void processData(String query, long timeElapsed, boolean autoCommit) {
         String queryWithWildcards = replaceParameters(query);
-        List<Long> timeElapsedList = queryToTimeElapsed.computeIfAbsent(queryWithWildcards, k -> new ArrayList<>());
-        timeElapsedList.add(timeElapsed);
-        queryToTimeElapsed.put(queryWithWildcards, timeElapsedList);
-        System.err.println(queryToTimeElapsed);
+        if (autoCommit) {
+            put(queryWithWildcards, timeElapsed);
+        } else {
+            transaction += queryWithWildcards + ";";
+            transactionTimeElapsed += timeElapsed;
+        }
         System.err.println(query + " executed in " + timeElapsed + " microseconds");
     }
 
@@ -75,5 +79,18 @@ public class DataStore {
         }
         stmt.accept(stmtDeparser);
         return stmtDeparser.getBuffer().toString();
+    }
+
+    public static void commitTransaction() {
+        put(transaction, transactionTimeElapsed);
+        transaction = "";
+        transactionTimeElapsed = 0;
+    }
+
+    private static void put(String key, long time) {
+        List<Long> timeElapsedList = queryToTimeElapsed.computeIfAbsent(key, k -> new ArrayList<>());
+        timeElapsedList.add(time);
+        queryToTimeElapsed.put(key, timeElapsedList);
+        System.err.println(queryToTimeElapsed);
     }
 }
