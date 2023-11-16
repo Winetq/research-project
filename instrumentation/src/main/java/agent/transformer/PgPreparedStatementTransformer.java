@@ -1,4 +1,4 @@
-package agent;
+package agent.transformer;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -12,11 +12,11 @@ import java.io.IOException;
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
 
-public class Transformer implements ClassFileTransformer {
+public class PgPreparedStatementTransformer implements ClassFileTransformer {
     private final String targetClassName;
     private final String targetMethodName;
 
-    public Transformer(String targetClassName, String targetMethodName) {
+    public PgPreparedStatementTransformer(String targetClassName, String targetMethodName) {
         this.targetClassName = targetClassName.replaceAll("\\.", "/");
         this.targetMethodName = targetMethodName;
     }
@@ -27,7 +27,7 @@ public class Transformer implements ClassFileTransformer {
         byte[] byteCode = classfileBuffer;
 
         if (className.equals(targetClassName)) {
-            System.err.println("[Agent] Transforming");
+            System.err.println("[Agent] Transforming PgPreparedStatement");
             try {
                 byteCode = transform(classfileBuffer);
             } catch (CannotCompileException | IOException | NotFoundException e) {
@@ -54,7 +54,7 @@ public class Transformer implements ClassFileTransformer {
         ctMethod.insertAt(189,"start = System.nanoTime();");
         ctMethod.insertAt(191,"{ finish = System.nanoTime();" +
                 "timeElapsed = finish - start;" +
-                "agent.DataStore.put(preparedQuery.query.toString(), TimeUnit.NANOSECONDS.toMicros(timeElapsed)); }");
+                "agent.DataStore.processData(preparedQuery.query.toString(), TimeUnit.NANOSECONDS.toMicros(timeElapsed), connection.getAutoCommit()); }");
 
         ctClass.writeFile();
         ctClass.detach();
