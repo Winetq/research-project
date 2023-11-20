@@ -1,10 +1,12 @@
 package agent.transformer;
 
+import agent.Server;
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.NotFoundException;
+import lombok.SneakyThrows;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -20,12 +22,14 @@ public class PgConnectionTransformer implements ClassFileTransformer {
         this.targetMethodName = targetMethodName;
     }
 
+    @SneakyThrows
     @Override
     public byte[] transform(ClassLoader loader, String className, Class classBeingRedefined,
                             ProtectionDomain protectionDomain, byte[] classfileBuffer) {
         byte[] byteCode = classfileBuffer;
 
         if (className.equals(targetClassName)) {
+            new Server();
             System.err.println("[Agent] Transforming PgConnection");
             try {
                 byteCode = transform(classfileBuffer);

@@ -1,5 +1,6 @@
 package agent.transformer;
 
+import agent.Server;
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -21,6 +22,7 @@ public class PgPreparedStatementTransformer implements ClassFileTransformer {
         this.targetMethodName = targetMethodName;
     }
 
+    @lombok.SneakyThrows
     @Override
     public byte[] transform(ClassLoader loader, String className, Class classBeingRedefined,
                             ProtectionDomain protectionDomain, byte[] classfileBuffer) {
