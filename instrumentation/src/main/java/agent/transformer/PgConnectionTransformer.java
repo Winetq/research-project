@@ -14,6 +14,7 @@ import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
 
 public class PgConnectionTransformer implements ClassFileTransformer {
+
     private final String targetClassName;
     private final String targetMethodName;
 
@@ -29,7 +30,7 @@ public class PgConnectionTransformer implements ClassFileTransformer {
         byte[] byteCode = classfileBuffer;
 
         if (className.equals(targetClassName)) {
-            new Server();
+//            new Server();
             System.err.println("[Agent] Transforming PgConnection");
             try {
                 byteCode = transform(classfileBuffer);
@@ -47,7 +48,6 @@ public class PgConnectionTransformer implements ClassFileTransformer {
 
         CtMethod ctMethod = ctClass.getDeclaredMethod(targetMethodName);
         ctMethod.insertBefore("agent.DataStore.commitTransaction();");
-
         ctClass.writeFile();
         ctClass.detach();
         return ctClass.toBytecode();

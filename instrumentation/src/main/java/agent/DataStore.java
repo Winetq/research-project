@@ -93,4 +93,8 @@ public class DataStore {
         queryToTimeElapsed.put(key, timeElapsedList);
         System.err.println(queryToTimeElapsed);
     }
+
+    public static Map<String, List<Long>> getQueryToTimeElapsed() {
+        return queryToTimeElapsed;
+    }
 }
