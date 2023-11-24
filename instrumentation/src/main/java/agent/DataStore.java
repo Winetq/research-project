@@ -1,5 +1,6 @@
 package agent;
 
+import agent.rest.RestClient;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.*;
 import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
@@ -16,6 +17,7 @@ public class DataStore {
     private static final String QUESTION_MARK = "?";
     private static String transaction = "";
     private static long transactionTimeElapsed = 0;
+    private static RestClient restClient = new RestClient();
 
     public static void processData(String query, long timeElapsed, boolean autoCommit) {
         String queryWithWildcards = replaceParameters(query);
@@ -92,5 +94,6 @@ public class DataStore {
         timeElapsedList.add(time);
         queryToTimeElapsed.put(key, timeElapsedList);
         System.err.println(queryToTimeElapsed);
+        restClient.updateTransactions(queryToTimeElapsed);
     }
 }

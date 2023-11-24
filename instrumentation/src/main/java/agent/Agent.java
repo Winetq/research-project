@@ -11,5 +11,4 @@ public class Agent {
         instr.addTransformer(new PgPreparedStatementTransformer("org.postgresql.jdbc.PgPreparedStatement", "executeWithFlags"));
         instr.addTransformer(new PgConnectionTransformer("org.postgresql.jdbc.PgConnection", "executeTransactionCommand"));
     }
-
 }
