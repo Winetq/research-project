@@ -25,6 +25,8 @@ public class TransactionController {
     public String homePage(Model model) {
         List<Transaction> transactions = transactionService.getTransactions();
         model.addAttribute("transactions", transactions);
+        if (transactions != null)
+            model.addAttribute("averageTimes", transactions.stream().map(Transaction::getAverageTime).toArray());
 
         return "get_transactions_view.html";
     }

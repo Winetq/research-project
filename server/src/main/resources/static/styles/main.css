@@ -1,0 +1,158 @@
+html,
+body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+body {
+    background-image: linear-gradient(to top, #581bb9, #481ca5, #3a1b92, #2d197e, #22166b, #1c1460, #171156, #120f4b, #100d46, #0e0b41, #0d083d, #0d0538);
+    background-size: cover;
+    font-family: gill sans, Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    max-height: 100%;
+    max-width: 100%;
+}
+
+@font-face {
+    font-family: "SpaceMono";
+    font-weight: normal;
+    src: url("[(@{/fonts/SpaceMono-Regular.ttf})]");
+}
+
+@font-face {
+    font-family: "SpaceMono";
+    font-weight: bold;
+    src: url("[(@{/fonts/SpaceMono-Bold.ttf})]");
+}
+
+h1 {
+    color: #fff;
+}
+
+table {
+    width: fit-content;
+    max-width: 90%;
+    color: #fffdfd;
+    border-collapse: separate;
+    border-spacing: 0em 0.2em;
+    border: 2px solid ##EFF1FB;
+    border-radius: 6px;
+    max-height: 80vh;
+    display: block;
+    overflow-y: overlay;
+}
+
+thead {
+    background-color: #3d3b66;
+    font-size: 14px;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+tbody {
+    font-size: 13px;
+    overflow-y: overlay;
+}
+
+th, td {
+    padding: 16px;
+    max-width: 50%;
+}
+
+.table-row-query {
+    font-family: "SpaceMono", monospace;
+}
+
+th:first-child { border-top-left-radius: 4px; }
+th:last-child { border-top-right-radius: 4px; }
+
+th:first-child { border-bottom-left-radius: 4px; }
+th:last-child { border-bottom-right-radius: 4px; }
+
+tr td:first-child { border-top-left-radius: 4px; }
+tr td:last-child { border-top-right-radius: 4px; }
+
+tr td:first-child { border-bottom-left-radius: 4px; }
+tr td:last-child { border-bottom-right-radius: 4px; }
+
+tr {
+    border-radius: 2px;
+    background-color: #fcfcfc1a;
+}
+
+.table-row:hover {
+    background-color: #CA009722;
+}
+
+.section {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-block: 16px;
+}
+
+ul {
+  list-style: none;
+}
+
+ul li::before {
+  content: ">";
+  color: #18ffab;
+  font-size: 15px;
+  font-family: "SpaceMono", monospace;
+  font-weight: bold;
+  display: inline-block;
+  width: 1em;
+  margin-left: -1em;
+}
+
+.table-row-times {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 2px;
+    max-width: 400px;
+}
+
+.table-row-time {
+    display: flex;
+    padding: 4px;
+}
+
+.table-row-avg-time {
+    width: fit-content;
+    border-radius: 10px;
+    padding: 4px 12px;
+    font-weight: bold;
+    font-size: 15px;
+    font-family: "SpaceMono", monospace;
+    background-color: #18ffab;
+    margin: 0 auto;
+    color: #005E47;
+}
+
+/* ===== Scrollbar ===== */
+  /* Firefox */
+  * {
+    scrollbar-width: auto;
+    scrollbar-color: #8E0080 #ffffff00;
+  }
+
+  /* Chrome, Edge, and Safari */
+  *::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: #ffffff00;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: #8E0080;
+    border-radius: 10px;
+    border: 3px solid #ffffff00;
+  }

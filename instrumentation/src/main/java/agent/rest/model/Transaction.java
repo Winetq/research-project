@@ -4,12 +4,12 @@ import java.util.List;
 
 public class Transaction {
 
-    public Transaction(String transactionQueries, List<Long> times) {
+    public Transaction(List<String> transactionQueries, List<Long> times) {
         this.transactionQueries = transactionQueries;
         this.times = times;
     }
 
-    private String transactionQueries;
+    private List<String> transactionQueries;
 
     private List<Long> times;
 
@@ -21,7 +21,7 @@ public class Transaction {
                 '}';
     }
 
-    public String getTransactionQueries() {
+    public List<String> getTransactionQueries() {
         return transactionQueries;
     }
 

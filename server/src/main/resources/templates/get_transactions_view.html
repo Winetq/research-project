@@ -1,23 +1,61 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<style>
-table, th, td {
-  border:1px solid black;
-}
-</style>
+<head>
+    <meta charset="UTF-8">
+    <title>Transactions</title>
+    <link th:href="@{/styles/main.css}" rel="stylesheet" />
+</head>
 <body>
+<div class="section">
+    <h1>
+        Transactions
+    </h1>
+</div>
 
-<table style="width:100%">
-    <tr>
-        <th>Queries in transaction</th>
-        <th>Time</th>
-    </tr>
-    <tr th:each="transaction: ${transactions}" >
-        <td th:text="${transaction.transactionQueries}"/>
-        <td th:text="${transaction.times}"/>
-    </tr>
-</table>
-
-
+<div class="section">
+    <table>
+        <thead>
+        <tr>
+            <th>Queries in transaction</th>
+            <th>Times [ms]</th>
+            <th>Average time [ms]</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${transactions}"
+            th:each="transaction, trIndex: ${transactions}"
+            class="table-row"
+        >
+            <td>
+                <ul>
+                    <li th:each="query: ${transaction.transactionQueries}"
+                        th:text="${query}"
+                        class="table-row-query"
+                    >
+                    </li>
+                </ul>
+            </td>
+            <td>
+                <div class="table-row-times">
+                    <span th:each="time, timeIndex: ${transaction.times}"
+                          th:text="${time} + ${timeIndex.index + 1 != timeIndex.size ? ', ' : ''} "
+                          class="table-row-time"
+                    />
+                </div>
+            </td>
+            <td>
+                <div class="table-row-avg-time"
+                th:text="${averageTimes[trIndex.index]}"
+                />
+            </td>
+        </tr>
+        <tr th:unless="${transactions}">
+            <td>No transactions</td>
+            <td></td>
+            <td></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 </body>
 </html>
