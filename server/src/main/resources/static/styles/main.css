@@ -39,7 +39,7 @@ table {
     border-spacing: 0em 0.2em;
     border: 2px solid ##EFF1FB;
     border-radius: 6px;
-    max-height: 80vh;
+    max-height: 75vh;
     display: block;
     overflow-y: overlay;
 }
