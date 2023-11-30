@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<style>
+table, th, td {
+  border:1px solid black;
+}
+</style>
+<body>
+
+<table style="width:100%">
+    <tr>
+        <th>Queries in transaction</th>
+        <th>Time</th>
+    </tr>
+    <tr th:each="transaction: ${transactions}" >
+        <td th:text="${transaction.transactionQueries}"/>
+        <td th:text="${transaction.times}"/>
+    </tr>
+</table>
+
+
+</body>
+</html>
