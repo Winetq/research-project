@@ -10,7 +10,7 @@ public class TransactionRepository {
 
     private List<Transaction> transactionList;
 
-    public void updateList(List<Transaction> queriesToTimeMap){
+    public void updateList(List<Transaction> queriesToTimeMap) {
         transactionList = queriesToTimeMap;
     }
 

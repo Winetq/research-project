@@ -11,13 +11,14 @@ import net.sf.jsqlparser.util.deparser.SelectDeParser;
 import net.sf.jsqlparser.util.deparser.StatementDeParser;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class DataStore {
     private static final Map<String, List<Long>> queryToTimeElapsed = new HashMap<>();
+    private static final RestClient restClient = new RestClient();
     private static final String QUESTION_MARK = "?";
     private static String transaction = "";
-    private static long transactionTimeElapsed = 0;
-    private static RestClient restClient = new RestClient();
+    private static long startTransactionTime = 0;
 
     public static void processData(String query, long timeElapsed, boolean autoCommit) {
         String queryWithWildcards = replaceParameters(query);
@@ -25,7 +26,9 @@ public class DataStore {
             put(queryWithWildcards, timeElapsed);
         } else {
             transaction += queryWithWildcards + ";";
-            transactionTimeElapsed += timeElapsed;
+            if (startTransactionTime == 0) {
+                startTransactionTime = System.nanoTime() - timeElapsed;
+            }
         }
         System.err.println(query + " executed in " + timeElapsed + " microseconds");
     }
@@ -84,9 +87,10 @@ public class DataStore {
     }
 
     public static void commitTransaction() {
-        put(transaction, transactionTimeElapsed);
+        long transactionTimeElapsed = System.nanoTime() - startTransactionTime;
+        put(transaction, TimeUnit.NANOSECONDS.toMicros(transactionTimeElapsed));
         transaction = "";
-        transactionTimeElapsed = 0;
+        startTransactionTime = 0;
     }
 
     private static void put(String key, long time) {
