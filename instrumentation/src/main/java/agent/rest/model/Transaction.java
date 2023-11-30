@@ -4,14 +4,14 @@ import java.util.List;
 
 public class Transaction {
 
+    private List<String> transactionQueries;
+
+    private List<Long> times;
+
     public Transaction(List<String> transactionQueries, List<Long> times) {
         this.transactionQueries = transactionQueries;
         this.times = times;
     }
-
-    private List<String> transactionQueries;
-
-    private List<Long> times;
 
     @Override
     public String toString() {
