@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class TransactionConverter {
 
-    public List<Transaction> toTransaction(Map<String, List<Long>> queryToTime){
+    public List<Transaction> toTransaction(Map<String, List<Long>> queryToTime) {
         List<Transaction> transactionList = new ArrayList<>();
 
         for (Map.Entry<String, List<Long>> entry : queryToTime.entrySet()) {

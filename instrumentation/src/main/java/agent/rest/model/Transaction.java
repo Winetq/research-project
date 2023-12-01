@@ -4,9 +4,9 @@ import java.util.List;
 
 public class Transaction {
 
-    private List<String> transactionQueries;
+    private final List<String> transactionQueries;
 
-    private List<Long> times;
+    private final List<Long> times;
 
     public Transaction(List<String> transactionQueries, List<Long> times) {
         this.transactionQueries = transactionQueries;
