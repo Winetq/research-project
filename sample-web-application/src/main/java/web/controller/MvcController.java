@@ -7,7 +7,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import web.database.model.Account;
 import web.database.model.Action;
+import web.database.model.Customer;
 import web.service.MvcService;
+
+import java.util.List;
 
 @Controller
 public class MvcController {
@@ -30,6 +33,27 @@ public class MvcController {
         model.addAttribute("actionTypes", actionTypes);
 
         return "form.html";
+    }
+
+    @GetMapping("/selectAllAccounts")
+    public String selectAllAccounts() {
+        List<Account> accountList = service.getAllAccounts();
+        System.out.println(accountList);
+        return "redirect:/";
+    }
+
+    @GetMapping("/selectAllCustomers")
+    public String selectAllCustomers() {
+        List<Customer> customerList = service.getAllCustomers();
+        System.out.println(customerList);
+        return "redirect:/";
+    }
+
+    @GetMapping("/selectAllActions")
+    public String selectAllActions() {
+        List<Action> actionList = service.getAllActions();
+        System.out.println(actionList);
+        return "redirect:/";
     }
 
     @PostMapping("/createNewAccount")

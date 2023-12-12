@@ -22,6 +22,21 @@
 </head>
 <body>
 <div align="center">
+    <form action="#" th:action="@{/selectAllAccounts}" method="get">
+        <button type="submit">Select all accounts</button>
+    </form>
+</div>
+<div align="center">
+    <form action="#" th:action="@{/selectAllCustomers}" method="get">
+        <button type="submit">Select all customers</button>
+    </form>
+</div>
+<div align="center">
+    <form action="#" th:action="@{/selectAllActions}" method="get">
+        <button type="submit">Select all actions</button>
+    </form>
+</div>
+<div align="center">
     <h1>Create new account</h1>
     <form action="#" th:action="@{/createNewAccount}" method="post" th:object="${account}">
         <label>Balance:</label>
