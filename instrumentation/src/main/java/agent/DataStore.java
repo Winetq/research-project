@@ -15,17 +15,20 @@ import java.util.concurrent.TimeUnit;
 
 public class DataStore {
     private static final Map<String, List<Long>> queryToTimeElapsed = new HashMap<>();
+    private static final Map<String, List<String>> queryToOriginalQueries = new HashMap<>();
     private static final RestClient restClient = new RestClient();
     private static final String QUESTION_MARK = "?";
     private static String transaction = "";
+    private static String originalTransaction = "";
     private static long startTransactionTime = 0;
 
     public static void processData(String query, long timeElapsed, boolean autoCommit) {
         String queryWithWildcards = replaceParameters(query);
         if (autoCommit) {
-            put(queryWithWildcards, timeElapsed);
+            put(queryWithWildcards, timeElapsed, query);
         } else {
             transaction += queryWithWildcards + ";";
+            originalTransaction += query + ";";
             if (startTransactionTime == 0) {
                 startTransactionTime = System.nanoTime() - timeElapsed;
             }
@@ -88,16 +91,20 @@ public class DataStore {
 
     public static void commitTransaction() {
         long transactionTimeElapsed = System.nanoTime() - startTransactionTime;
-        put(transaction, TimeUnit.NANOSECONDS.toMicros(transactionTimeElapsed));
+        put(transaction, TimeUnit.NANOSECONDS.toMicros(transactionTimeElapsed), originalTransaction);
         transaction = "";
+        originalTransaction = "";
         startTransactionTime = 0;
     }
 
-    private static void put(String key, long time) {
+    private static void put(String key, long time, String originalQuery) {
         List<Long> timeElapsedList = queryToTimeElapsed.computeIfAbsent(key, k -> new ArrayList<>());
         timeElapsedList.add(time);
         queryToTimeElapsed.put(key, timeElapsedList);
+        List<String> originalQueryList = queryToOriginalQueries.computeIfAbsent(key, k -> new ArrayList<>());
+        originalQueryList.add(originalQuery);
+        queryToOriginalQueries.put(key, originalQueryList);
         System.err.println(queryToTimeElapsed);
-        restClient.updateTransactions(queryToTimeElapsed);
+        restClient.updateTransactions(queryToTimeElapsed, queryToOriginalQueries);
     }
 }

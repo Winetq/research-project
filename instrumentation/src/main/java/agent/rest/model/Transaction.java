@@ -8,9 +8,12 @@ public class Transaction {
 
     private final List<Long> times;
 
-    public Transaction(List<String> transactionQueries, List<Long> times) {
+    private final List<String> originalQueries;
+
+    public Transaction(List<String> transactionQueries, List<Long> times, List<String> originalQueries) {
         this.transactionQueries = transactionQueries;
         this.times = times;
+        this.originalQueries = originalQueries;
     }
 
     @Override
@@ -27,5 +30,9 @@ public class Transaction {
 
     public List<Long> getTimes() {
         return times;
+    }
+
+    public List<String> getOriginalQueries() {
+        return originalQueries;
     }
 }

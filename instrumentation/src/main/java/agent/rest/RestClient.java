@@ -15,12 +15,12 @@ public class RestClient {
 
     private static final int OK_STATUS_CODE = 200;
 
-    public void updateTransactions(Map<String, List<Long>> transactions) {
+    public void updateTransactions(Map<String, List<Long>> transactions, Map<String, List<String>> originalQueries) {
         Client client = ClientBuilder.newClient().register(new ObjectMapper());
         WebTarget webTarget = client.target("http://localhost:8080/updateTransactions");
         Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
 
-        List<Transaction> transactionList = new TransactionConverter().toTransaction(transactions);
+        List<Transaction> transactionList = new TransactionConverter().toTransaction(transactions, originalQueries);
 
         String transactionsString = null;
         try {
