@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Banking app</title>
+    <style type="text/css">
+        label {
+            display: inline-block;
+            width: 200px;
+            margin: 5px;
+            text-align: left;
+        }
+        input[type=text], input[type=number], select {
+            display: inline-block;
+            width: 200px;
+        }
+        button {
+            padding: 5px;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+<div align="center">
+    <form action="#" th:action="@{/selectAllAccounts}" method="get">
+        <button type="submit">Select all accounts</button>
+    </form>
+</div>
+<div align="center">
+    <form action="#" th:action="@{/selectAllCustomers}" method="get">
+        <button type="submit">Select all customers</button>
+    </form>
+</div>
+<div align="center">
+    <form action="#" th:action="@{/selectAllActions}" method="get">
+        <button type="submit">Select all actions</button>
+    </form>
+</div>
+<div align="center">
+    <h1>Create new account</h1>
+    <form action="#" th:action="@{/createNewAccount}" method="post" th:object="${account}">
+        <label>Balance:</label>
+        <input type="number" th:field="*{balance}"/><br/>
+
+        <button type="submit">Create</button>
+    </form>
+</div>
+<div align="center">
+    <h1>Create new action</h1>
+    <form action="#" th:action="@{/createNewAction}" method="post" th:object="${action}">
+        <label>Title:</label>
+        <input type="text" th:field="*{title}"/><br/>
+
+        <label>Amount:</label>
+        <input type="number" th:field="*{amount}"/><br/>
+
+        <label>Type:</label>
+        <select th:field="*{type}">
+            <option th:each="actionType: ${actionTypes}" th:value="${actionType}" th:text="${actionType}"/>
+        </select>
+        <br/>
+
+        <label>Account id:</label>
+        <input type="number" th:field="*{accountId}"/><br/>
+
+        <label>Status:</label>
+        <input type="text" th:field="*{status}"/><br/>
+
+        <button type="submit">Create</button>
+    </form>
+</div>
+</body>
+</html>
