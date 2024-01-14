@@ -33,13 +33,14 @@ h1 {
 
 table {
     width: fit-content;
-    max-width: 90%;
+    width: 90%;
+    min-width: 90%;
     color: #fffdfd;
     border-collapse: separate;
     border-spacing: 0em 0.2em;
     border: 2px solid ##EFF1FB;
     border-radius: 6px;
-    max-height: 75vh;
+    max-height: 72vh;
     display: block;
     overflow-y: overlay;
 }
@@ -59,13 +60,42 @@ tbody {
 
 th, td {
     padding: 16px;
-    max-width: 50%;
+    width: 100%;
 }
 
 .table-row-query {
     font-family: "SpaceMono", monospace;
+    min-width: 200px;
 }
 
+.row-original-queries {
+    background-color: #83709f11;
+    white-space: pre;
+    text-wrap: wrap;
+}
+
+.list-item {
+    font-size: 13px;
+    font-family: "SpaceMono", monospace;
+}
+.list-original-queries {
+    font-size: 13px;
+    font-family: "SpaceMono", monospace;
+    background-color: #fcfcfc05;
+    padding-inline: 40px;
+
+    ul li::before {
+      content: ">";
+      color: #ff18ab;
+      font-size: 13px;
+      font-family: "SpaceMono", monospace;
+      font-weight: bold;
+      display: inline-block;
+      width: 1em;
+      margin-left: -1em;
+    }
+
+}
 th:first-child { border-top-left-radius: 4px; }
 th:last-child { border-top-right-radius: 4px; }
 
@@ -83,6 +113,10 @@ tr {
     background-color: #fcfcfc1a;
 }
 
+.table-row {
+    cursor: pointer;
+}
+
 .table-row:hover {
     background-color: #CA009722;
 }
@@ -92,7 +126,7 @@ tr {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding-block: 16px;
+    padding-top: 10px;
 }
 
 ul {
@@ -116,6 +150,7 @@ ul li::before {
     flex-wrap: wrap;
     gap: 2px;
     max-width: 400px;
+    min-width: 200px;
 }
 
 .table-row-time {
@@ -134,6 +169,27 @@ ul li::before {
     margin: 0 auto;
     color: #005E47;
 }
+
+.footer {
+    padding: 8px 48px;
+    background-color: #00000021;
+    font-size: 12px;
+    color: #e6e6e6;
+    position: absolute;
+    bottom: 10px;
+}
+
+@keyframes append-animate {
+	from {
+		transform: scaleY(0);
+		opacity: 0;
+	}
+	to {
+		transform: scaleY(1);
+		opacity: 1;
+	}
+}
+
 
 /* ===== Scrollbar ===== */
   /* Firefox */

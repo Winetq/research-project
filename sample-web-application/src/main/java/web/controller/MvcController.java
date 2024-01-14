@@ -67,4 +67,10 @@ public class MvcController {
         service.createAction(newAction);
         return "redirect:/";
     }
+
+    @PostMapping("/createRandomTransaction")
+    public String createRandomTransaction() {
+        service.createRandomTransaction();
+        return "redirect:/";
+    }
 }

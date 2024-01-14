@@ -9,6 +9,7 @@ import java.util.List;
 public class Transaction {
     private List<String> transactionQueries;
     private List<Long> times;
+    private List<String> originalQueries;
 
     public Long getAverageTime() {
         return (long) Math.round(times.stream().reduce(0L, Long::sum).floatValue() / times.size());
