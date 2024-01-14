@@ -11,6 +11,7 @@ import web.database.repository.CustomerRepository;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -44,5 +45,14 @@ public class MvcService {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public void createRandomTransaction() {
+        Integer amount = Math.toIntExact(Math.round(Math.floor(Math.random() * (100 - 1 + 1) + 1)));
+        String actionType = Math.random() < 0.5 ? "Przelew krajowy" : "Przelew walutowy";
+        Long accountId = Math.round(Math.floor(Math.random() * (3 - 1 + 1) + 1));
+        Action newAction = new Action(0L, "Transfer to user " + accountId, amount,
+                actionType, accountId, "Done", new Date());
+        createAction(newAction);
     }
 }
