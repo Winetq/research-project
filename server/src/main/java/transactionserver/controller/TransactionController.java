@@ -25,10 +25,10 @@ public class TransactionController {
         List<Transaction> transactions = transactionService.getTransactions();
         model.addAttribute("transactions", transactions);
         int showingQueriesForIndex = -1;
-        if (transactions != null)
+        if (transactions != null) {
             model.addAttribute("averageTimes", transactions.stream().map(Transaction::getAverageTime).toArray());
             model.addAttribute("showingQueriesForIndex", showingQueriesForIndex);
-
+        }
         return "get_transactions_view.html";
     }
 
