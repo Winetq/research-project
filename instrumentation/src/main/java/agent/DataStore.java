@@ -30,7 +30,8 @@ public class DataStore {
         System.err.println(query + " executed in " + timeElapsed + " microseconds");
     }
 
-    public static void commitTransaction() {
+    public static void commitTransaction(String status) {
+        System.err.println(status);
         long transactionTimeElapsed = System.nanoTime() - startTransactionTime;
         put(transaction, TimeUnit.NANOSECONDS.toMicros(transactionTimeElapsed), originalTransaction);
         transaction = "";
