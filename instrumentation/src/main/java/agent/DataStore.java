@@ -1,6 +1,8 @@
 package agent;
 
 import agent.rest.RestClient;
+import agent.rest.model.QueryStatus;
+import agent.rest.model.Transaction;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,8 +11,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class DataStore {
-    private static final Map<String, List<Long>> queryToTimeElapsed = new HashMap<>();
-    private static final Map<String, List<String>> queryToOriginalQueries = new HashMap<>();
+    private static final Map<String, List<Transaction>> queryToTransactions = new HashMap<>();
     private static final RestClient restClient = new RestClient();
     private static String transaction = "";
     private static String originalTransaction = "";
@@ -19,7 +20,7 @@ public class DataStore {
     public static void processData(String query, long timeElapsed, boolean autoCommit) {
         String queryWithWildcards = SqlParser.replaceParameters(query);
         if (autoCommit) {
-            put(queryWithWildcards, timeElapsed, query);
+            put(queryWithWildcards, query, timeElapsed, QueryStatus.DEFAULT);
         } else {
             transaction += queryWithWildcards + ";";
             originalTransaction += query + ";";
@@ -30,31 +31,20 @@ public class DataStore {
         System.err.println(query + " executed in " + timeElapsed + " microseconds");
     }
 
-    public static void commitTransaction(String status) {
-        System.err.println(status);
+    public static void executeTransaction(String status) {
         long transactionTimeElapsed = System.nanoTime() - startTransactionTime;
-        put(transaction, TimeUnit.NANOSECONDS.toMicros(transactionTimeElapsed), originalTransaction);
+        put(transaction, originalTransaction, TimeUnit.NANOSECONDS.toMicros(transactionTimeElapsed), QueryStatus.of(status));
         transaction = "";
         originalTransaction = "";
         startTransactionTime = 0;
     }
 
-    private static void put(String key, long time, String originalQuery) {
-        putTime(key, time);
-        putOriginalQuery(key, originalQuery);
-        System.err.println(queryToTimeElapsed);
-        restClient.updateTransactions(queryToTimeElapsed, queryToOriginalQueries);
-    }
-
-    private static void putTime(String key, long time) {
-        List<Long> timeElapsedList = queryToTimeElapsed.computeIfAbsent(key, k -> new ArrayList<>());
-        timeElapsedList.add(time);
-        queryToTimeElapsed.put(key, timeElapsedList);
-    }
-
-    private static void putOriginalQuery(String key, String originalQuery) {
-        List<String> originalQueryList = queryToOriginalQueries.computeIfAbsent(key, k -> new ArrayList<>());
-        originalQueryList.add(originalQuery);
-        queryToOriginalQueries.put(key, originalQueryList);
+    private static void put(String key, String originalQuery, long time, QueryStatus status) {
+        List<Transaction> transactions = queryToTransactions.computeIfAbsent(key, k -> new ArrayList<>());
+        transactions.add(new Transaction(originalQuery, time, status));
+        queryToTransactions.put(key, transactions);
+        System.err.println(status);
+        System.err.println(queryToTransactions);
+        restClient.updateTransactions(queryToTransactions);
     }
 }

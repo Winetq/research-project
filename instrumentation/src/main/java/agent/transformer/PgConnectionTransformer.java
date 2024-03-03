@@ -42,7 +42,7 @@ public class PgConnectionTransformer implements ClassFileTransformer {
         CtClass ctClass = classPool.makeClass(new ByteArrayInputStream(classfileBuffer));
 
         CtMethod ctMethod = ctClass.getDeclaredMethod(targetMethodName);
-        ctMethod.insertBefore("agent.DataStore.commitTransaction(query.getNativeSql());");
+        ctMethod.insertBefore("agent.DataStore.executeTransaction(query.getNativeSql());");
 
         ctClass.writeFile();
         ctClass.detach();
