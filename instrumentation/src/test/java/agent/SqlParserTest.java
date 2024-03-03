@@ -6,11 +6,11 @@ import org.testng.annotations.Test;
 import static org.testng.Assert.assertEquals;
 
 @Test
-public class DataStoreTest {
+public class SqlParserTest {
 
     @Test(dataProvider = "provideSelectTestScenarios")
     public void whenReplaceParametersInSelect_thenParametersAreReplacedWithWildcards(String actual, String expected) {
-        assertEquals(DataStore.replaceParameters(actual), expected);
+        assertEquals(SqlParser.replaceParameters(actual), expected);
     }
 
     @DataProvider
@@ -36,7 +36,7 @@ public class DataStoreTest {
 
     @Test(dataProvider = "provideUpdateTestScenarios")
     public void whenReplaceParametersInUpdate_thenParametersAreReplacedWithWildcards(String actual, String expected) {
-        assertEquals(DataStore.replaceParameters(actual), expected);
+        assertEquals(SqlParser.replaceParameters(actual), expected);
     }
 
     @DataProvider
@@ -55,7 +55,7 @@ public class DataStoreTest {
 
     @Test(dataProvider = "provideDeleteTestScenarios")
     public void whenReplaceParametersInDelete_thenParametersAreReplacedWithWildcards(String actual, String expected) {
-        assertEquals(DataStore.replaceParameters(actual), expected);
+        assertEquals(SqlParser.replaceParameters(actual), expected);
     }
 
     @DataProvider
@@ -73,7 +73,7 @@ public class DataStoreTest {
 
     @Test(dataProvider = "provideInsertTestScenarios")
     public void whenReplaceParametersInInsert_thenParametersAreReplacedWithWildcards(String actual, String expected) {
-        assertEquals(DataStore.replaceParameters(actual), expected);
+        assertEquals(SqlParser.replaceParameters(actual), expected);
     }
 
     @DataProvider

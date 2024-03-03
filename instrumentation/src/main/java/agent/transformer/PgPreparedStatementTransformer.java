@@ -51,8 +51,8 @@ public class PgPreparedStatementTransformer implements ClassFileTransformer {
         ctClass.addField(ctFieldTimeElapsed);
 
         CtMethod ctMethod = ctClass.getDeclaredMethod(targetMethodName);
-        ctMethod.insertAt(189,"start = System.nanoTime();");
-        ctMethod.insertAt(191,"{ finish = System.nanoTime();" +
+        ctMethod.insertBefore("start = System.nanoTime();");
+        ctMethod.insertAfter("{ finish = System.nanoTime();" +
                 "timeElapsed = finish - start;" +
                 "agent.DataStore.processData(preparedQuery.query.toString(), TimeUnit.NANOSECONDS.toMicros(timeElapsed), connection.getAutoCommit()); }");
 
