@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Transactions</title>
-    <link th:href="@{/styles/main.css}" rel="stylesheet" />
+    <link th:href="@{/styles/main.css}" rel="stylesheet"/>
     <script type="text/javascript" th:src="@{/js/index.js}"></script>
     <script th:inline="javascript">
         /* <![CDATA[ */
@@ -50,14 +50,14 @@
                 <div class="table-row-times">
                     <span th:each="transaction, timeIndex: ${transactions.value}"
                           th:text="${transaction.time} + ${timeIndex.index + 1 != timeIndex.size ? ', ' : ''}"
-                          class="table-row-time"
-                    />
+                          class="table-row-time">
+                    </span>
                 </div>
             </td>
             <td>
                 <div class="table-row-avg-time"
-                th:text="${#numbers.formatDecimal(#aggregates.avg(transactions.value.![time]), 1, 'NONE', 2, 'POINT')}"
-                />
+                th:text="${#numbers.formatDecimal(#aggregates.avg(transactions.value.![time]), 1, 'NONE', 2, 'POINT')}">
+                </div>
             </td>
         </tr>
         <tr th:unless="${queriesToTransactions}">
@@ -71,9 +71,7 @@
 <div class="section">
     <div class="footer">
         <p><i>
-            Automated tracking and grouping of database
-            transactions in Java Virtual Machine (JVM)
-            applications
+            Automated tracking and grouping of database transactions in Java Virtual Machine (JVM) applications
         </i></p>
         <p>
             A project created for Research Project classes at Gdansk University of Technology
