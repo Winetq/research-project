@@ -28,6 +28,9 @@ function update(key) {
             var listItem = document.createElement('li');
             listItem.classList.add('list-item');
             listItem.textContent = transaction.originalQuery.split(';').join('\n');
+            if (transaction.status != "DEFAULT") {
+                listItem.textContent += "Status: " + transaction.status;
+            }
             newList.appendChild(listItem);
         });
 

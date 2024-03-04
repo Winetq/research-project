@@ -56,7 +56,7 @@
             </td>
             <td>
                 <div class="table-row-avg-time"
-                th:text="${#aggregates.avg(transactions.value.![time])}"
+                th:text="${#numbers.formatDecimal(#aggregates.avg(transactions.value.![time]), 1, 'NONE', 2, 'POINT')}"
                 />
             </td>
         </tr>
