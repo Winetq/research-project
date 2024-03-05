@@ -34,7 +34,7 @@
             th:id="'row'+${trIndex.index}"
             th:data-parameter1="${trIndex.index}"
             th:data-parameter2="${transactions.key}"
-            onclick="showQueries(this.getAttribute('data-parameter1'), this.getAttribute('data-parameter2'))"
+            th:onclick="showQueries(this.getAttribute('data-parameter1'), this.getAttribute('data-parameter2'))"
             title="Click to show original queries"
         >
             <td>
