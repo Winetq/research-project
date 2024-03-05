@@ -10,31 +10,31 @@ import transactionserver.model.Transaction;
 import transactionserver.service.TransactionService;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class TransactionController {
 
-    private final TransactionService transactionService;
+    private final TransactionService service;
 
-    public TransactionController(TransactionService transactionService) {
-        this.transactionService = transactionService;
+    public TransactionController(TransactionService service) {
+        this.service = service;
     }
 
     @GetMapping("/")
     public String homePage(Model model) {
-        List<Transaction> transactions = transactionService.getTransactions();
-        model.addAttribute("transactions", transactions);
+        Map<List<String>, List<Transaction>> queriesToTransactions = service.getQueriesToTransactions();
+        model.addAttribute("queriesToTransactions", queriesToTransactions);
         int showingQueriesForIndex = -1;
-        if (transactions != null) {
-            model.addAttribute("averageTimes", transactions.stream().map(Transaction::getAverageTime).toArray());
+        if (queriesToTransactions != null) {
             model.addAttribute("showingQueriesForIndex", showingQueriesForIndex);
         }
         return "get_transactions_view.html";
     }
 
     @PostMapping("/updateTransactions")
-    public ResponseEntity<String> updateTransactions(@RequestBody List<Transaction> newTransactions) {
-        transactionService.updateTransactions(newTransactions);
+    public ResponseEntity<String> updateTransactions(@RequestBody Map<String, List<Transaction>> queryToNewTransactions) {
+        service.updateTransactions(queryToNewTransactions);
         return ResponseEntity.ok().build();
     }
 }

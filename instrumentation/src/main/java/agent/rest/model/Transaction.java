@@ -1,38 +1,34 @@
 package agent.rest.model;
 
-import java.util.List;
-
 public class Transaction {
+    private final String originalQuery;
+    private final Long time;
+    private final QueryStatus status;
 
-    private final List<String> transactionQueries;
-
-    private final List<Long> times;
-
-    private final List<String> originalQueries;
-
-    public Transaction(List<String> transactionQueries, List<Long> times, List<String> originalQueries) {
-        this.transactionQueries = transactionQueries;
-        this.times = times;
-        this.originalQueries = originalQueries;
+    public Transaction(String originalQuery, Long time, QueryStatus status) {
+        this.originalQuery = originalQuery;
+        this.time = time;
+        this.status = status;
     }
 
     @Override
     public String toString() {
         return "Transaction{" +
-                "transactionQueries='" + transactionQueries + '\'' +
-                ", times=" + times +
+                "originalQuery='" + originalQuery + '\'' +
+                ", time=" + time +
+                ", status='" + status + '\'' +
                 '}';
     }
 
-    public List<String> getTransactionQueries() {
-        return transactionQueries;
+    public String getOriginalQuery() {
+        return originalQuery;
     }
 
-    public List<Long> getTimes() {
-        return times;
+    public Long getTime() {
+        return time;
     }
 
-    public List<String> getOriginalQueries() {
-        return originalQueries;
+    public QueryStatus getStatus() {
+        return status;
     }
 }

@@ -115,7 +115,11 @@ public class ActionRepository {
              PreparedStatement pstmtAccount = connection.prepareStatement(updateAccountSQL)) {
             pstmt.execute();
             pstmtAccount.execute();
-            connection.commit();
+            if (Math.random() < 0.75) {
+                connection.commit();
+            } else {
+                connection.rollback();
+            }
         }
         catch (SQLException e) {
             System.out.println(e.getMessage());

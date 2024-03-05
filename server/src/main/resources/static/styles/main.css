@@ -4,6 +4,7 @@ body {
     width: 100%;
     overflow: hidden;
 }
+
 body {
     background-image: linear-gradient(to top, #581bb9, #481ca5, #3a1b92, #2d197e, #22166b, #1c1460, #171156, #120f4b, #100d46, #0e0b41, #0d083d, #0d0538);
     background-size: cover;
@@ -78,6 +79,7 @@ th, td {
     font-size: 13px;
     font-family: "SpaceMono", monospace;
 }
+
 .list-original-queries {
     font-size: 13px;
     font-family: "SpaceMono", monospace;
@@ -94,8 +96,8 @@ th, td {
       width: 1em;
       margin-left: -1em;
     }
-
 }
+
 th:first-child { border-top-left-radius: 4px; }
 th:last-child { border-top-right-radius: 4px; }
 
