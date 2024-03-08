@@ -100,6 +100,7 @@ public class SqlParserTest {
                 {"INSERT INTO account (id, balance, creation_date) VALUES(?, ?, ?)", List.of("99", "999", "2024-03-08 11:08:41+01"), "INSERT INTO account (id, balance, creation_date) VALUES(99, 999, 2024-03-08 11:08:41+01)"},
                 {"INSERT INTO account (id, balance, creation_date) VALUES(99, ?, 2024-03-08 11:08:41+01)", List.of("999"), "INSERT INTO account (id, balance, creation_date) VALUES(99, 999, 2024-03-08 11:08:41+01)"},
                 {"SELECT * FROM table", List.of(), "SELECT * FROM table"},
+                {"UPDATE Account SET balance=balance+? WHERE id=?", List.of("64", "8"), "UPDATE Account SET balance=balance+64 WHERE id=8"},
                 {"Update table SET x = ? WHERE x2 = ?", List.of("?", "1000"), "Update table SET x = 1000 WHERE x2 = ?"}
         };
     }

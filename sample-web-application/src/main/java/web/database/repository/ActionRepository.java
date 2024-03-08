@@ -89,8 +89,7 @@ public class ActionRepository {
         String SQL = "INSERT INTO Action (title, amount, type, account_id, status, date) " +
                 "VALUES('" + title + "', " + amount + ", '" + type + "', " + accountId
                 + ", '" + status+ "', '" + Timestamp.valueOf(date) + "')";
-        String updateAccountSQL = "UPDATE Account SET balance=balance+" +
-                amount + " WHERE id=" + accountId;
+        String updateAccountSQL = "UPDATE Account SET balance=balance+? WHERE id=?";
 
         connection.setAutoCommit(false);
 
@@ -114,6 +113,8 @@ public class ActionRepository {
         try (PreparedStatement pstmt = connection.prepareStatement(SQL);
              PreparedStatement pstmtAccount = connection.prepareStatement(updateAccountSQL)) {
             pstmt.execute();
+            pstmtAccount.setInt(1, amount);
+            pstmtAccount.setLong(2, accountId);
             pstmtAccount.execute();
             if (Math.random() < 0.75) {
                 connection.commit();
