@@ -3,6 +3,8 @@ package agent;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.util.List;
+
 import static org.testng.Assert.assertEquals;
 
 @Test
@@ -82,7 +84,23 @@ public class SqlParserTest {
                 {"INSERT INTO Action (title, amount, type, account_id, status, date) VALUES ('trip', 10000, 'card', 2, 'done', '2023-10-16 10:40:38.0')", "INSERT INTO Action (title, amount, type, account_id, status, date) VALUES (?, ?, ?, ?, ?, ?)"},
                 {"INSERT INTO account (id, balance, creation_date) VALUES (14, 100, '2023-10-16 10:41:48.0')", "INSERT INTO account (id, balance, creation_date) VALUES (?, ?, ?)"},
                 {"INSERT INTO test (id) VALUES (14)", "INSERT INTO test (id) VALUES (?)"},
-                {"INSERT INTO test (id) VALUES ()", "INSERT INTO test (id) VALUES ()"}
+                {"INSERT INTO test (id) VALUES ()", "INSERT INTO test (id) VALUES ()"},
+                {"INSERT INTO account (id, balance, creation_date) VALUES(?, ?, ?)", "INSERT INTO account (id, balance, creation_date) VALUES (?, ?, ?)"}
+        };
+    }
+
+    @Test(dataProvider = "provideTestScenarios")
+    public void whenReplaceWildcardsIsInvoked_thenWildcardsAreReplacedWithParameters(String sql, List<String> parameters, String expected) {
+        assertEquals(SqlParser.replaceWildcards(sql, parameters), expected);
+    }
+
+    @DataProvider
+    private static Object[][] provideTestScenarios() {
+        return new Object[][] {
+                {"INSERT INTO account (id, balance, creation_date) VALUES(?, ?, ?)", List.of("99", "999", "2024-03-08 11:08:41+01"), "INSERT INTO account (id, balance, creation_date) VALUES(99, 999, 2024-03-08 11:08:41+01)"},
+                {"INSERT INTO account (id, balance, creation_date) VALUES(99, ?, 2024-03-08 11:08:41+01)", List.of("999"), "INSERT INTO account (id, balance, creation_date) VALUES(99, 999, 2024-03-08 11:08:41+01)"},
+                {"SELECT * FROM table", List.of(), "SELECT * FROM table"},
+                {"Update table SET x = ? WHERE x2 = ?", List.of("?", "1000"), "Update table SET x = 1000 WHERE x2 = ?"}
         };
     }
 }

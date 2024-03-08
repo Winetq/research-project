@@ -41,6 +41,8 @@ public class PgPreparedStatementTransformer implements ClassFileTransformer {
     private byte[] transform(byte[] classfileBuffer) throws CannotCompileException, IOException, NotFoundException {
         ClassPool classPool = ClassPool.getDefault();
         classPool.importPackage("java.util.concurrent");
+        classPool.importPackage("java.util.List");
+        classPool.importPackage("java.util.ArrayList");
         CtClass ctClass = classPool.makeClass(new ByteArrayInputStream(classfileBuffer));
 
         CtField ctFieldStart = new CtField(CtClass.longType, "start", ctClass);
@@ -50,11 +52,17 @@ public class PgPreparedStatementTransformer implements ClassFileTransformer {
         CtField ctFieldTimeElapsed = new CtField(CtClass.longType, "timeElapsed", ctClass);
         ctClass.addField(ctFieldTimeElapsed);
 
+        CtClass listType = classPool.get("java.util.List");
+        CtField ctFieldParameters = new CtField(listType, "parameters", ctClass);
+        ctClass.addField(ctFieldParameters);
+
         CtMethod ctMethod = ctClass.getDeclaredMethod(targetMethodName);
-        ctMethod.insertBefore("start = System.nanoTime();");
+        ctMethod.insertBefore("{ start = System.nanoTime();" +
+                "parameters = new ArrayList();" +
+                "for (int i = 1; i <= preparedParameters.getParameterCount(); i++) parameters.add(preparedParameters.toString(i, true)); }");
         ctMethod.insertAfter("{ finish = System.nanoTime();" +
                 "timeElapsed = finish - start;" +
-                "agent.DataStore.processData(preparedQuery.query.toString(), TimeUnit.NANOSECONDS.toMicros(timeElapsed), connection.getAutoCommit()); }");
+                "agent.DataStore.processData(preparedQuery.query.toString(), parameters, TimeUnit.NANOSECONDS.toMicros(timeElapsed), connection.getAutoCommit()); }");
 
         ctClass.writeFile();
         ctClass.detach();

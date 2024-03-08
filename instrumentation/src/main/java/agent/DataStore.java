@@ -17,17 +17,19 @@ public class DataStore {
     private static String originalTransaction = "";
     private static long startTransactionTime = 0;
 
-    public static void processData(String query, long timeElapsed, boolean autoCommit) {
+    public static void processData(String query, List<String> parameters, long timeElapsed, boolean autoCommit) {
+        String queryWithParameters = SqlParser.replaceWildcards(query, parameters);
         String queryWithWildcards = SqlParser.replaceParameters(query);
         if (autoCommit) {
-            put(queryWithWildcards, query, timeElapsed, QueryStatus.DEFAULT);
+            put(queryWithWildcards, queryWithParameters, timeElapsed, QueryStatus.DEFAULT);
         } else {
             transaction += queryWithWildcards + ";";
-            originalTransaction += query + ";";
+            originalTransaction += queryWithParameters + ";";
             if (startTransactionTime == 0) {
                 startTransactionTime = System.nanoTime() - timeElapsed;
             }
         }
+        System.err.println("Parameters: " + parameters);
         System.err.println(query + " executed in " + timeElapsed + " microseconds");
     }
 
@@ -44,7 +46,6 @@ public class DataStore {
         transactions.add(new Transaction(originalQuery, time, status));
         queryToTransactions.put(key, transactions);
         System.err.println(status);
-        System.err.println(queryToTransactions);
         restClient.updateTransactions(queryToTransactions);
     }
 }

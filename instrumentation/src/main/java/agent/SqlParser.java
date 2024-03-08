@@ -13,6 +13,7 @@ import net.sf.jsqlparser.util.deparser.ExpressionDeParser;
 import net.sf.jsqlparser.util.deparser.SelectDeParser;
 import net.sf.jsqlparser.util.deparser.StatementDeParser;
 
+import java.util.List;
 import java.util.Objects;
 
 public class SqlParser {
@@ -69,5 +70,13 @@ public class SqlParser {
         }
         stmt.accept(stmtDeparser);
         return stmtDeparser.getBuffer().toString();
+    }
+
+    public static String replaceWildcards(String sql, List<String> parameters) {
+        String sqlWithParameters = sql;
+        for (String parameter : parameters) {
+            sqlWithParameters = sqlWithParameters.replaceFirst("\\" + QUESTION_MARK, parameter);
+        }
+        return sqlWithParameters;
     }
 }
