@@ -55,10 +55,12 @@ public class AccountRepository {
         List<Account> accountList = getAllAccounts();
         Optional<Long> maxId = accountList.stream().map(Account::getId).max(Long::compare);
         Long newId = maxId.map(id -> id + 1).orElse(1L);
-        String SQL = "INSERT INTO account (id, balance, creation_date) " +
-            "VALUES("+ newId + ", " + balance + ", '" + Timestamp.valueOf(creationDate) + "')";
+        String SQL = "INSERT INTO account (id, balance, creation_date) VALUES(?, ?, ?)";
 
         try (PreparedStatement pstmt = connection.prepareStatement(SQL)) {
+            pstmt.setLong(1, newId);
+            pstmt.setInt(2, balance);
+            pstmt.setTimestamp(3, Timestamp.valueOf(creationDate));
             pstmt.executeQuery();
         }
         catch (SQLException e) {

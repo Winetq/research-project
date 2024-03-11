@@ -27,7 +27,7 @@ function update(key) {
         transactions.forEach(function(transaction) {
             var listItem = document.createElement('li');
             listItem.classList.add('list-item');
-            listItem.textContent = transaction.originalQuery.split(';').join('\n');
+            transaction.originalQueries.forEach(function(originalQuery) { listItem.textContent += originalQuery + '\n' });
             if (transaction.status != "DEFAULT") {
                 listItem.textContent += "Status: " + transaction.status;
             }
