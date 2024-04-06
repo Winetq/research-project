@@ -67,16 +67,16 @@
         </form>
     </div>
     <div align="center">
-        <h1>Create new account</h1>
+        <h1>Create a new account</h1>
         <form action="#" th:action="@{/createNewAccount}" method="post" th:object="${account}">
             <label>Balance:</label>
             <input type="number" th:field="*{balance}"/><br/>
 
-            <button type="submit">Create</button>
+            <button type="submit">Create a new account</button>
         </form>
     </div>
     <div align="center">
-        <h1>Create new action</h1>
+        <h1>Create a new action</h1>
         <form action="#" th:action="@{/createRandomTransaction}" method="post">
             <button type="submit">Create a random transaction</button>
         </form>
@@ -99,7 +99,7 @@
             <label>Status:</label>
             <input type="text" th:field="*{status}"/><br/>
 
-            <button type="submit">Create</button>
+            <button type="submit">Create a new action</button>
         </form>
     </div>
 </div>
