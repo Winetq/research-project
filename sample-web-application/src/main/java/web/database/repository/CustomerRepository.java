@@ -12,13 +12,12 @@ import java.util.List;
 
 public class CustomerRepository {
 
-    private final Connection connection = DatabaseConnection.connect();
-
     public List<Customer> getAllCustomers() {
         String SQL = "SELECT * FROM customer";
         List<Customer> customerList = new ArrayList<>();
 
-        try (PreparedStatement pstmt = connection.prepareStatement(SQL);
+        try (Connection connection = DatabaseConnection.connect();
+             PreparedStatement pstmt = connection.prepareStatement(SQL);
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
@@ -36,7 +35,8 @@ public class CustomerRepository {
         String SQL = "SELECT * FROM Customer WHERE id=" + id;
         Customer customer = null;
 
-        try (PreparedStatement pstmt = connection.prepareStatement(SQL);
+        try (Connection connection = DatabaseConnection.connect();
+             PreparedStatement pstmt = connection.prepareStatement(SQL);
              ResultSet rs = pstmt.executeQuery()) {
 
             customer = new Customer(rs);
@@ -52,7 +52,8 @@ public class CustomerRepository {
         String SQL = "SELECT * FROM Customer WHERE firstName=" + firstName;
         List<Customer> customerList = new ArrayList<>();
 
-        try (PreparedStatement pstmt = connection.prepareStatement(SQL);
+        try (Connection connection = DatabaseConnection.connect();
+             PreparedStatement pstmt = connection.prepareStatement(SQL);
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
@@ -70,7 +71,8 @@ public class CustomerRepository {
         String SQL = "SELECT * FROM Customer WHERE lastName=" + lastName;
         List<Customer> customerList = new ArrayList<>();
 
-        try (PreparedStatement pstmt = connection.prepareStatement(SQL);
+        try (Connection connection = DatabaseConnection.connect();
+             PreparedStatement pstmt = connection.prepareStatement(SQL);
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
@@ -88,7 +90,8 @@ public class CustomerRepository {
         String SQL = "INSERT INTO customer (first_name, last_name) " +
                 "VALUES(" + firstName + ", " + lastName + ")";
 
-        try (PreparedStatement pstmt = connection.prepareStatement(SQL)) {
+        try (Connection connection = DatabaseConnection.connect();
+             PreparedStatement pstmt = connection.prepareStatement(SQL)) {
             pstmt.executeQuery();
         }
         catch (SQLException e) {
