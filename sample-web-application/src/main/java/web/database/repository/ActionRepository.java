@@ -117,6 +117,7 @@ public class ActionRepository {
         try (PreparedStatement pstmt = connection.prepareStatement(SQL);
              PreparedStatement pstmtAccount = connection.prepareStatement(updateAccountSQL)) {
             pstmt.execute();
+            // Thread.sleep(30000);
             pstmtAccount.setInt(1, amount);
             pstmtAccount.setLong(2, accountId);
             pstmtAccount.execute();

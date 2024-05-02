@@ -4,6 +4,8 @@ import agent.rest.RestClient;
 import agent.rest.model.QueryStatus;
 import agent.rest.model.Transaction;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,10 +19,11 @@ public class DataStore {
     private static String transactionWithWildcards = "";
     private static long startTransactionTime = 0;
 
-    public static void processData(String query, List<String> parameters, long timeElapsed, boolean autoCommit) {
+    public static void processData(String query, List<String> parameters, Connection connection, long timeElapsed) throws SQLException {
+        System.err.println(connection);
         String queryWithParameters = SqlParser.replaceWildcards(query, parameters);
         String queryWithWildcards = SqlParser.replaceParameters(query);
-        if (autoCommit) {
+        if (connection.getAutoCommit()) {
             put(queryWithWildcards, List.of(queryWithParameters), timeElapsed, QueryStatus.DEFAULT);
         } else {
             transactionWithWildcards += queryWithWildcards + ";";
