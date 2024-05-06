@@ -4,6 +4,7 @@ import agent.rest.RestClient;
 import agent.rest.model.Transaction;
 import agent.rest.model.TransactionBuilder;
 import agent.rest.model.TransactionStatus;
+import lombok.Setter;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -14,9 +15,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 public class DataStore {
-    private static final Map<String, List<Transaction>> queryToTransactions = new ConcurrentHashMap<>();
+    static final Map<String, List<Transaction>> queryToTransactions = new ConcurrentHashMap<>();
     private static final Map<Connection, TransactionBuilder> connectionToTransaction = new ConcurrentHashMap<>();
     private static final RestClient restClient = new RestClient();
+    @Setter private static DataExporter dataExporter = DataExporter.CONSOLE;
 
     public static void processData(String query, List<String> parameters, Connection connection, long timeElapsed) throws SQLException {
         String queryWithParameters = SqlParser.replaceWildcards(query, parameters);
@@ -44,7 +46,7 @@ public class DataStore {
         queryToTransactions.put(key, transactions);
         System.err.println(status);
         System.err.println(queryToTransactions);
-        restClient.updateTransactions(queryToTransactions);
+        if (dataExporter == DataExporter.SERVER) restClient.updateTransactions(queryToTransactions);
     }
 
     private static void put(Connection connection, long timeElapsed, String queryWithWildcards, String queryWithParameters) {
