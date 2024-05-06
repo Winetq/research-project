@@ -62,7 +62,7 @@ public class PgPreparedStatementTransformer implements ClassFileTransformer {
                 "for (int i = 1; i <= preparedParameters.getParameterCount(); i++) parameters.add(preparedParameters.toString(i, true)); }");
         ctMethod.insertAfter("{ finish = System.nanoTime();" +
                 "timeElapsed = finish - start;" +
-                "agent.DataStore.processData(preparedQuery.query.toString(), parameters, TimeUnit.NANOSECONDS.toMicros(timeElapsed), connection.getAutoCommit()); }");
+                "agent.DataStore.processData(preparedQuery.query.toString(), parameters, connection, TimeUnit.NANOSECONDS.toMicros(timeElapsed)); }");
 
         ctClass.writeFile();
         ctClass.detach();

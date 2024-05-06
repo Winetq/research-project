@@ -14,13 +14,12 @@ import java.util.Optional;
 
 public class AccountRepository {
 
-    private final Connection connection = DatabaseConnection.connect();
-
     public List<Account> getAllAccounts() {
         String SQL = "SELECT * FROM account";
         List<Account> accountList = new ArrayList<>();
 
-        try (PreparedStatement pstmt = connection.prepareStatement(SQL);
+        try (Connection connection = DatabaseConnection.connect();
+             PreparedStatement pstmt = connection.prepareStatement(SQL);
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
@@ -39,7 +38,8 @@ public class AccountRepository {
         String SQL = "SELECT * FROM account WHERE id=" + id;
         Account account = null;
 
-        try (PreparedStatement pstmt = connection.prepareStatement(SQL);
+        try (Connection connection = DatabaseConnection.connect();
+             PreparedStatement pstmt = connection.prepareStatement(SQL);
              ResultSet rs = pstmt.executeQuery()) {
 
             account = new Account(rs);
@@ -57,7 +57,8 @@ public class AccountRepository {
         Long newId = maxId.map(id -> id + 1).orElse(1L);
         String SQL = "INSERT INTO account (id, balance, creation_date) VALUES(?, ?, ?)";
 
-        try (PreparedStatement pstmt = connection.prepareStatement(SQL)) {
+        try (Connection connection = DatabaseConnection.connect();
+             PreparedStatement pstmt = connection.prepareStatement(SQL)) {
             pstmt.setLong(1, newId);
             pstmt.setInt(2, balance);
             pstmt.setTimestamp(3, Timestamp.valueOf(creationDate));
@@ -71,7 +72,8 @@ public class AccountRepository {
     public void deleteAccount(Long id) {
         String SQL = "DELETE FROM Account WHERE id=" + id;
 
-        try (PreparedStatement pstmt = connection.prepareStatement(SQL)) {
+        try (Connection connection = DatabaseConnection.connect();
+             PreparedStatement pstmt = connection.prepareStatement(SQL)) {
             pstmt.executeQuery();
         }
         catch (SQLException e) {

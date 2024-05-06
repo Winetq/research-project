@@ -13,13 +13,12 @@ import java.util.List;
 
 public class ActionRepository {
 
-    private final Connection connection = DatabaseConnection.connect();
-
     public List<Action> getAllActions() {
         String SQL = "SELECT * FROM action";
         List<Action> actionList = new ArrayList<>();
 
-        try (PreparedStatement pstmt = connection.prepareStatement(SQL);
+        try (Connection connection = DatabaseConnection.connect();
+             PreparedStatement pstmt = connection.prepareStatement(SQL);
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
@@ -37,7 +36,8 @@ public class ActionRepository {
         String SQL = "SELECT * FROM Action WHERE id=" + id;
         Action action = null;
 
-        try (PreparedStatement pstmt = connection.prepareStatement(SQL);
+        try (Connection connection = DatabaseConnection.connect();
+             PreparedStatement pstmt = connection.prepareStatement(SQL);
              ResultSet rs = pstmt.executeQuery()) {
 
             action = new Action(rs);
@@ -53,7 +53,8 @@ public class ActionRepository {
         String SQL = "SELECT * FROM Action WHERE title=" + title;
         List<Action> actionList = new ArrayList<>();
 
-        try (PreparedStatement pstmt = connection.prepareStatement(SQL);
+        try (Connection connection = DatabaseConnection.connect();
+             PreparedStatement pstmt = connection.prepareStatement(SQL);
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
@@ -71,7 +72,8 @@ public class ActionRepository {
         String SQL = "SELECT * FROM Action WHERE type=" + type;
         List<Action> actionList = new ArrayList<>();
 
-        try (PreparedStatement pstmt = connection.prepareStatement(SQL);
+        try (Connection connection = DatabaseConnection.connect();
+             PreparedStatement pstmt = connection.prepareStatement(SQL);
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
@@ -90,6 +92,8 @@ public class ActionRepository {
                 "VALUES('" + title + "', " + amount + ", '" + type + "', " + accountId
                 + ", '" + status+ "', '" + Timestamp.valueOf(date) + "')";
         String updateAccountSQL = "UPDATE Account SET balance=balance+? WHERE id=?";
+
+        Connection connection = DatabaseConnection.connect();
 
         connection.setAutoCommit(false);
 
@@ -113,6 +117,7 @@ public class ActionRepository {
         try (PreparedStatement pstmt = connection.prepareStatement(SQL);
              PreparedStatement pstmtAccount = connection.prepareStatement(updateAccountSQL)) {
             pstmt.execute();
+            Thread.sleep(10000);
             pstmtAccount.setInt(1, amount);
             pstmtAccount.setLong(2, accountId);
             pstmtAccount.execute();
@@ -122,12 +127,11 @@ public class ActionRepository {
                 connection.rollback();
             }
         }
-        catch (SQLException e) {
+        catch (SQLException | InterruptedException e) {
             System.out.println(e.getMessage());
         } finally {
-            connection.setAutoCommit(true);
+            connection.close();
         }
-
     }
 
 }
