@@ -1,4 +1,4 @@
-name: Build and push docker image for agent_server
+name: Build and push docker image for server
 
 on: push
 
@@ -7,7 +7,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
       - uses: mr-smithers-excellent/docker-build-push@v6
         with:
           image: mcwynar/research-project
