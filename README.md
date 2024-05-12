@@ -1,11 +1,44 @@
-## How it works  
+## About
 
-In order to run these applications you have to create a jar for instrumentation, add a path to this jar using
--javaagent argument as VM options for sample-application and run sample-application:
+This project was developing as a part of the Research Project course at Gdansk University of Technology. However, I am
+still working on this because it is also my master's thesis. The topic is Automated tracking and grouping of database
+transactions in Java Virtual Machine (JVM) applications. The purpose of this project is to provide a Java agent JAR that
+can be attached to any Java application and dynamically injects bytecode to capture database queries and transactions.
+You can export the telemetry data in a variety of formats. The net result is the ability to gather telemetry data from a
+Java application without code changes.
+ 
+## Getting Started
+
+Create a Java agent JAR inside the `instrumentation` module using this command:
 ```
--javaagent:instrumentation\target\instrumentation-1.0-SNAPSHOT-jar-with-dependencies.jar
+mvn clean package
 ```
 
+After that you can run an example application for example from `sample-web-application` module with this agent using 
+the `-javaagent` flag:
 ```
-docker run --name agent_server -d -p 8080:8080 mcwynar/research-project:agent_server
+java -javaagent:path\to\instrumentation-1.0-SNAPSHOT-jar-with-dependencies.jar -jar sample-web-application.jar
 ```
+
+Or with:
+```
+java -javaagent:path\to\instrumentation-1.0-SNAPSHOT-jar-with-dependencies.jar=console -jar sample-web-application.jar
+```
+
+This way all data will be exported to console. However, there is a possibility to send data to a dedicated server from
+the `server` module. To run this server use the latest image:
+```
+docker run -d -p 8080:8080 mcwynar/research-project:agent_server
+```
+
+And change console to server:
+```
+java -javaagent:path\to\instrumentation-1.0-SNAPSHOT-jar-with-dependencies.jar=server -jar sample-web-application.jar
+```
+
+## Architecture Diagram
+
+
+## Limitations
+
+This agent is working only with Java applications that have a PostgreSQL database.
