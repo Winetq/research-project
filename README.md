@@ -38,6 +38,7 @@ java -javaagent:path\to\instrumentation-1.0-SNAPSHOT-jar-with-dependencies.jar=s
 
 ## Architecture Diagram
 
+![solution_architecture](https://github.com/Winetq/research-project/assets/62242952/95be5caf-2832-4ef6-9f45-a813d762456c)
 
 ## Limitations
 
