@@ -1,6 +1,6 @@
 ## About
 
-This project was developing as a part of the Research Project course at Gdansk University of Technology. However, I am
+This project was developed as a part of the Research Project course at Gdansk University of Technology. However, I am
 still working on this because it is also my master's thesis. The topic is Automated tracking and grouping of database
 transactions in Java Virtual Machine (JVM) applications. The purpose of this project is to provide a Java agent JAR that
 can be attached to any Java application. Its task is to dynamically injects bytecode to capture database queries and
