@@ -3,9 +3,9 @@
 This project was developing as a part of the Research Project course at Gdansk University of Technology. However, I am
 still working on this because it is also my master's thesis. The topic is Automated tracking and grouping of database
 transactions in Java Virtual Machine (JVM) applications. The purpose of this project is to provide a Java agent JAR that
-can be attached to any Java application and dynamically injects bytecode to capture database queries and transactions.
-You can export the telemetry data in a variety of formats. The net result is the ability to gather telemetry data from a
-Java application without code changes.
+can be attached to any Java application and dynamically injects bytecode to capture database queries and transactions 
+and measure their time. You can export the telemetry data in a variety of formats. The net result is the ability to
+gather telemetry data from a Java application without code changes.
  
 ## Getting Started
 
