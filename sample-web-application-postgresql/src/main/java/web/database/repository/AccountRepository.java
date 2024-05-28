@@ -62,7 +62,7 @@ public class AccountRepository {
             pstmt.setLong(1, newId);
             pstmt.setInt(2, balance);
             pstmt.setTimestamp(3, Timestamp.valueOf(creationDate));
-            pstmt.executeQuery();
+            pstmt.execute();
         }
         catch (SQLException e) {
             System.out.println(e.getMessage());
