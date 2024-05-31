@@ -13,7 +13,7 @@ import java.util.List;
 public class CustomerRepository {
 
     public List<Customer> getAllCustomers() {
-        String SQL = "SELECT * FROM customer";
+        String SQL = "SELECT * FROM Customer";
         List<Customer> customerList = new ArrayList<>();
 
         try (Connection connection = DatabaseConnection.connect();
@@ -87,7 +87,7 @@ public class CustomerRepository {
     }
 
     public void addCustomer(String firstName, String lastName) {
-        String SQL = "INSERT INTO customer (first_name, last_name) " +
+        String SQL = "INSERT INTO Customer (first_name, last_name) " +
                 "VALUES(" + firstName + ", " + lastName + ")";
 
         try (Connection connection = DatabaseConnection.connect();

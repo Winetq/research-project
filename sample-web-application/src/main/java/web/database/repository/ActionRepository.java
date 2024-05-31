@@ -14,7 +14,7 @@ import java.util.List;
 public class ActionRepository {
 
     public List<Action> getAllActions() {
-        String SQL = "SELECT * FROM action";
+        String SQL = "SELECT * FROM Action";
         List<Action> actionList = new ArrayList<>();
 
         try (Connection connection = DatabaseConnection.connect();

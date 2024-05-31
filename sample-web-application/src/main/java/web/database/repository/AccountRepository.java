@@ -15,7 +15,7 @@ import java.util.Optional;
 public class AccountRepository {
 
     public List<Account> getAllAccounts() {
-        String SQL = "SELECT * FROM account";
+        String SQL = "SELECT * FROM Account";
         List<Account> accountList = new ArrayList<>();
 
         try (Connection connection = DatabaseConnection.connect();
@@ -35,7 +35,7 @@ public class AccountRepository {
 
 
     public Account getAccountById(Long id) {
-        String SQL = "SELECT * FROM account WHERE id=" + id;
+        String SQL = "SELECT * FROM Account WHERE id=" + id;
         Account account = null;
 
         try (Connection connection = DatabaseConnection.connect();
@@ -55,7 +55,7 @@ public class AccountRepository {
         List<Account> accountList = getAllAccounts();
         Optional<Long> maxId = accountList.stream().map(Account::getId).max(Long::compare);
         Long newId = maxId.map(id -> id + 1).orElse(1L);
-        String SQL = "INSERT INTO account (id, balance, creation_date) VALUES(?, ?, ?)";
+        String SQL = "INSERT INTO Account (id, balance, creation_date) VALUES(?, ?, ?)";
 
         try (Connection connection = DatabaseConnection.connect();
              PreparedStatement pstmt = connection.prepareStatement(SQL)) {
