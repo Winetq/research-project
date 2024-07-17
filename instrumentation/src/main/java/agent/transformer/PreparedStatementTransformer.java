@@ -19,7 +19,7 @@ public class PreparedStatementTransformer implements ClassFileTransformer {
 
     public PreparedStatementTransformer() {
         this.targetInterfaceName = "PreparedStatement";
-        this.targetMethodNames = List.of("executeQuery", "executeUpdate", "executeLargeUpdate", "execute");
+        this.targetMethodNames = List.of("executeQuery", "executeUpdate", "execute");
     }
 
     @Override
