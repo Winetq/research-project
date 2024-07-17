@@ -9,37 +9,18 @@ import javassist.NotFoundException;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.lang.instrument.ClassFileTransformer;
-import java.security.ProtectionDomain;
 import java.util.List;
 
-public class PreparedStatementTransformer implements ClassFileTransformer {
-    private final String targetInterfaceName;
+public class PreparedStatementTransformer extends Transformer {
     private final List<String> targetMethodNames;
 
     public PreparedStatementTransformer() {
-        this.targetInterfaceName = "PreparedStatement";
+        super("PreparedStatement");
         this.targetMethodNames = List.of("executeQuery", "executeUpdate", "execute");
     }
 
     @Override
-    public byte[] transform(ClassLoader loader, String className, Class classBeingRedefined,
-                            ProtectionDomain protectionDomain, byte[] classfileBuffer) {
-        byte[] byteCode = classfileBuffer;
-
-        try {
-            if (checkIfImplements(classfileBuffer)) {
-                System.err.println("[Agent] Transforming " + className);
-                byteCode = transformClass(classfileBuffer);
-            }
-        } catch (CannotCompileException | IOException | NotFoundException e) {
-            System.err.println(e.getMessage());
-        }
-
-        return byteCode;
-    }
-
-    private boolean checkIfImplements(byte[] classfileBuffer) throws IOException, NotFoundException {
+    protected boolean checkIfImplements(byte[] classfileBuffer) throws IOException, NotFoundException {
         ClassPool classPool = ClassPool.getDefault();
         CtClass ctClass = classPool.makeClass(new ByteArrayInputStream(classfileBuffer));
         CtClass[] ctClassInterfaces = ctClass.getInterfaces();
@@ -47,7 +28,8 @@ public class PreparedStatementTransformer implements ClassFileTransformer {
         return !ctClass.isInterface() && ctClassInterfaces.length == 1 && ctClassInterfaces[0].getSimpleName().equals(targetInterfaceName);
     }
 
-    private byte[] transformClass(byte[] classfileBuffer) throws CannotCompileException, IOException, NotFoundException {
+    @Override
+    protected byte[] transformClass(byte[] classfileBuffer) throws CannotCompileException, IOException, NotFoundException {
         ClassPool classPool = ClassPool.getDefault();
         classPool.importPackage("java.util.concurrent");
         classPool.importPackage("java.util.List");

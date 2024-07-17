@@ -8,43 +8,25 @@ import javassist.NotFoundException;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.lang.instrument.ClassFileTransformer;
-import java.security.ProtectionDomain;
 
 import static java.util.Arrays.stream;
 
-public class ConnectionTransformer implements ClassFileTransformer {
-    private final String targetInterfaceName;
+public class ConnectionTransformer extends Transformer {
     private final String commitMethodName;
     private final String rollbackMethodName;
 
     public ConnectionTransformer() {
-        this.targetInterfaceName = "Connection";
+        super("Connection");
         this.commitMethodName = "commit";
         this.rollbackMethodName = "rollback";
     }
 
     @Override
-    public byte[] transform(ClassLoader loader, String className, Class classBeingRedefined,
-                            ProtectionDomain protectionDomain, byte[] classfileBuffer) {
-        byte[] byteCode = classfileBuffer;
-
-        try {
-            if (checkIfImplements(classfileBuffer)) {
-                System.err.println("[Agent] Transforming " + className);
-                byteCode = transformClass(classfileBuffer);
-            }
-        } catch (CannotCompileException | IOException | NotFoundException e) {
-            System.err.println(e.getMessage());
-        }
-
-        return byteCode;
-    }
-
-    private boolean checkIfImplements(byte[] classfileBuffer) throws IOException, NotFoundException {
+    protected boolean checkIfImplements(byte[] classfileBuffer) throws IOException, NotFoundException {
         ClassPool classPool = ClassPool.getDefault();
         CtClass ctClass = classPool.makeClass(new ByteArrayInputStream(classfileBuffer));
         CtClass[] ctClassInterfaces = ctClass.getInterfaces();
+
         if (!ctClass.isInterface() && ctClassInterfaces.length == 1 && ctClassInterfaces[0].getSimpleName().endsWith(targetInterfaceName)) { // e.g. PostgreSQL: BaseConnection, MySQl: JdbcConnection
             return stream(ctClassInterfaces[0].getInterfaces()).anyMatch(i -> i.getSimpleName().equals(targetInterfaceName));
         }
@@ -52,7 +34,8 @@ public class ConnectionTransformer implements ClassFileTransformer {
         return false;
     }
 
-    private byte[] transformClass(byte[] classfileBuffer) throws CannotCompileException, IOException, NotFoundException {
+    @Override
+    protected byte[] transformClass(byte[] classfileBuffer) throws CannotCompileException, IOException, NotFoundException {
         ClassPool classPool = ClassPool.getDefault();
         CtClass ctClass = classPool.makeClass(new ByteArrayInputStream(classfileBuffer));
 
