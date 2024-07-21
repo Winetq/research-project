@@ -20,15 +20,6 @@ public class PreparedStatementTransformer extends Transformer {
     }
 
     @Override
-    protected boolean checkIfImplements(byte[] classfileBuffer) throws IOException, NotFoundException {
-        ClassPool classPool = ClassPool.getDefault();
-        CtClass ctClass = classPool.makeClass(new ByteArrayInputStream(classfileBuffer));
-        CtClass[] ctClassInterfaces = ctClass.getInterfaces();
-
-        return !ctClass.isInterface() && ctClassInterfaces.length == 1 && ctClassInterfaces[0].getSimpleName().equals(targetInterfaceName);
-    }
-
-    @Override
     protected byte[] transformClass(byte[] classfileBuffer) throws CannotCompileException, IOException, NotFoundException {
         ClassPool classPool = ClassPool.getDefault();
         classPool.importPackage("java.util.concurrent");
