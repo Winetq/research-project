@@ -1,5 +1,6 @@
 package web.database.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,6 +14,7 @@ import java.util.Date;
 @Setter
 @ToString
 @NoArgsConstructor
+@AllArgsConstructor
 public class Action {
     private Long id;
     private String title;
@@ -30,15 +32,5 @@ public class Action {
         this.accountId = rs.getLong("account_id");
         this.status = rs.getString("status");
         this.date = rs.getDate("date");
-    }
-
-    public Action(Long id, String title, Integer amount, String type, Long accountId, String status, Date date) {
-        this.id = id;
-        this.title = title;
-        this.amount = amount;
-        this.type = type;
-        this.accountId = accountId;
-        this.status = status;
-        this.date = date;
     }
 }

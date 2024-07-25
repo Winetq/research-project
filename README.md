@@ -10,11 +10,17 @@ ability to gather telemetry data from a Java application without code changes.
 ## Tech Stack
 
 * Java 17
+* Maven
 * Javassist
 * JSqlParser
 * Jersey
+* TestNG
+* H2
 * Spring Boot
 * Thymeleaf
+* Docker
+* MySQL
+* PostgreSQL
 
 ## Getting Started
 
