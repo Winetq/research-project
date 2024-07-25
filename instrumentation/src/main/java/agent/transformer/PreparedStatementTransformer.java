@@ -39,7 +39,12 @@ public class PreparedStatementTransformer extends Transformer {
         ctClass.addField(ctFieldParameters);
 
         for (String method : targetMethodNames) {
-            transformMethod(ctClass, method);
+            if (ctClass.getName().contains("postgresql")) {
+                transformMethod(ctClass, method);
+            }
+            if (ctClass.getName().contains("mysql")) {
+                transformMySqlMethod(ctClass, method);
+            }
         }
 
         ctClass.writeFile();
@@ -55,5 +60,16 @@ public class PreparedStatementTransformer extends Transformer {
         ctMethod.insertAfter("{ finish = System.nanoTime();" +
                 "timeElapsed = finish - start;" +
                 "agent.DataStore.processData(preparedQuery.query.toString(), parameters, connection, TimeUnit.NANOSECONDS.toMicros(timeElapsed)); }");
+    }
+
+    private void transformMySqlMethod(CtClass ctClass, String method) throws CannotCompileException, NotFoundException {
+        CtMethod ctMethod = ctClass.getDeclaredMethod(method, null);
+        ctMethod.insertBefore("{ start = System.nanoTime();" +
+                "parameters = new ArrayList();" +
+                "for (int i = 0; i < ((com.mysql.cj.PreparedQuery) this.query).getParameterCount(); i++) parameters.add(((com.mysql.cj.PreparedQuery) this.query).getQueryBindings().getBindValues()[i].getString()); }");
+        ctMethod.insertAfter("{ finish = System.nanoTime();" +
+                "timeElapsed = finish - start;" +
+                "String originalSql = ((com.mysql.cj.PreparedQuery) this.query).getOriginalSql();" +
+                "agent.DataStore.processData(originalSql, parameters, connection, TimeUnit.NANOSECONDS.toMicros(timeElapsed)); }");
     }
 }

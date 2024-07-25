@@ -130,6 +130,7 @@ public class ActionRepository {
         catch (SQLException | InterruptedException e) {
             System.out.println(e.getMessage());
         } finally {
+            connection.setAutoCommit(true);
             connection.close();
         }
     }
