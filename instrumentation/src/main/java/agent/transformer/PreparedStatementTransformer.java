@@ -20,15 +20,6 @@ public class PreparedStatementTransformer extends Transformer {
     }
 
     @Override
-    protected boolean checkIfImplements(byte[] classfileBuffer) throws IOException, NotFoundException {
-        ClassPool classPool = ClassPool.getDefault();
-        CtClass ctClass = classPool.makeClass(new ByteArrayInputStream(classfileBuffer));
-        CtClass[] ctClassInterfaces = ctClass.getInterfaces();
-
-        return !ctClass.isInterface() && ctClassInterfaces.length == 1 && ctClassInterfaces[0].getSimpleName().equals(targetInterfaceName);
-    }
-
-    @Override
     protected byte[] transformClass(byte[] classfileBuffer) throws CannotCompileException, IOException, NotFoundException {
         ClassPool classPool = ClassPool.getDefault();
         classPool.importPackage("java.util.concurrent");
@@ -48,7 +39,13 @@ public class PreparedStatementTransformer extends Transformer {
         ctClass.addField(ctFieldParameters);
 
         for (String method : targetMethodNames) {
-            transformMethod(ctClass, method);
+            if (ctClass.getName().contains("postgresql")) {
+                transformPostgreSqlMethod(ctClass, method);
+            } else if (ctClass.getName().contains("mysql")) {
+                transformMySqlMethod(ctClass, method, classPool);
+            } else {
+                System.err.println("Not supported database.");
+            }
         }
 
         ctClass.writeFile();
@@ -56,7 +53,7 @@ public class PreparedStatementTransformer extends Transformer {
         return ctClass.toBytecode();
     }
 
-    private void transformMethod(CtClass ctClass, String method) throws CannotCompileException, NotFoundException {
+    private void transformPostgreSqlMethod(CtClass ctClass, String method) throws CannotCompileException, NotFoundException {
         CtMethod ctMethod = ctClass.getDeclaredMethod(method, null);
         ctMethod.insertBefore("{ start = System.nanoTime();" +
                 "parameters = new ArrayList();" +
@@ -64,5 +61,19 @@ public class PreparedStatementTransformer extends Transformer {
         ctMethod.insertAfter("{ finish = System.nanoTime();" +
                 "timeElapsed = finish - start;" +
                 "agent.DataStore.processData(preparedQuery.query.toString(), parameters, connection, TimeUnit.NANOSECONDS.toMicros(timeElapsed)); }");
+    }
+
+    private void transformMySqlMethod(CtClass ctClass, String method, ClassPool pool) throws CannotCompileException, NotFoundException {
+        CtMethod ctMethod = ctClass.getDeclaredMethod(method, null);
+        ctMethod.addLocalVariable("preparedQuery", pool.get("com.mysql.cj.PreparedQuery"));
+        ctMethod.addLocalVariable("queryBindings", pool.get("com.mysql.cj.QueryBindings"));
+        ctMethod.insertBefore("{ start = System.nanoTime();" +
+                "parameters = new ArrayList();" +
+                "preparedQuery = ((com.mysql.cj.PreparedQuery) query);" +
+                "queryBindings = preparedQuery.getQueryBindings();" +
+                "for (int i = 0; i < preparedQuery.getParameterCount(); i++) parameters.add(queryBindings.getBindValues()[i].getString()); }");
+        ctMethod.insertAfter("{ finish = System.nanoTime();" +
+                "timeElapsed = finish - start;" +
+                "agent.DataStore.processData(preparedQuery.getOriginalSql(), parameters, connection, TimeUnit.NANOSECONDS.toMicros(timeElapsed)); }");
     }
 }
