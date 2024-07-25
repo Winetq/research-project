@@ -40,10 +40,11 @@ public class PreparedStatementTransformer extends Transformer {
 
         for (String method : targetMethodNames) {
             if (ctClass.getName().contains("postgresql")) {
-                transformMethod(ctClass, method);
-            }
-            if (ctClass.getName().contains("mysql")) {
-                transformMySqlMethod(ctClass, method);
+                transformPostgreSqlMethod(ctClass, method);
+            } else if (ctClass.getName().contains("mysql")) {
+                transformMySqlMethod(ctClass, method, classPool);
+            } else {
+                System.err.println("Not supported database.");
             }
         }
 
@@ -52,7 +53,7 @@ public class PreparedStatementTransformer extends Transformer {
         return ctClass.toBytecode();
     }
 
-    private void transformMethod(CtClass ctClass, String method) throws CannotCompileException, NotFoundException {
+    private void transformPostgreSqlMethod(CtClass ctClass, String method) throws CannotCompileException, NotFoundException {
         CtMethod ctMethod = ctClass.getDeclaredMethod(method, null);
         ctMethod.insertBefore("{ start = System.nanoTime();" +
                 "parameters = new ArrayList();" +
@@ -62,14 +63,17 @@ public class PreparedStatementTransformer extends Transformer {
                 "agent.DataStore.processData(preparedQuery.query.toString(), parameters, connection, TimeUnit.NANOSECONDS.toMicros(timeElapsed)); }");
     }
 
-    private void transformMySqlMethod(CtClass ctClass, String method) throws CannotCompileException, NotFoundException {
+    private void transformMySqlMethod(CtClass ctClass, String method, ClassPool pool) throws CannotCompileException, NotFoundException {
         CtMethod ctMethod = ctClass.getDeclaredMethod(method, null);
+        ctMethod.addLocalVariable("preparedQuery", pool.get("com.mysql.cj.PreparedQuery"));
+        ctMethod.addLocalVariable("queryBindings", pool.get("com.mysql.cj.QueryBindings"));
         ctMethod.insertBefore("{ start = System.nanoTime();" +
                 "parameters = new ArrayList();" +
-                "for (int i = 0; i < ((com.mysql.cj.PreparedQuery) this.query).getParameterCount(); i++) parameters.add(((com.mysql.cj.PreparedQuery) this.query).getQueryBindings().getBindValues()[i].getString()); }");
+                "preparedQuery = ((com.mysql.cj.PreparedQuery) query);" +
+                "queryBindings = preparedQuery.getQueryBindings();" +
+                "for (int i = 0; i < preparedQuery.getParameterCount(); i++) parameters.add(queryBindings.getBindValues()[i].getString()); }");
         ctMethod.insertAfter("{ finish = System.nanoTime();" +
                 "timeElapsed = finish - start;" +
-                "String originalSql = ((com.mysql.cj.PreparedQuery) this.query).getOriginalSql();" +
-                "agent.DataStore.processData(originalSql, parameters, connection, TimeUnit.NANOSECONDS.toMicros(timeElapsed)); }");
+                "agent.DataStore.processData(preparedQuery.getOriginalSql(), parameters, connection, TimeUnit.NANOSECONDS.toMicros(timeElapsed)); }");
     }
 }

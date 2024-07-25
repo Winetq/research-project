@@ -6,7 +6,16 @@ transactions in Java Virtual Machine (JVM) applications. The purpose of this pro
 can be attached to any Java application. Its task is to dynamically injects bytecode to capture database queries and
 transactions and measure their time. You can export the telemetry data in a variety of formats. The net result is the
 ability to gather telemetry data from a Java application without code changes.
- 
+
+## Tech Stack
+
+* Java 17
+* Javassist
+* JSqlParser
+* Jersey
+* Spring Boot
+* Thymeleaf
+
 ## Getting Started
 
 Create a Java agent JAR inside the `instrumentation` module using this command:
@@ -42,4 +51,5 @@ java -javaagent:path\to\instrumentation-1.0-SNAPSHOT-jar-with-dependencies.jar=s
 
 ## Limitations
 
-This agent is working only with Java applications that have a PostgreSQL database.
+This agent is working only with Java applications that have PostgreSQL (sample-web-application-postgresql) or MySQL 
+(sample-web-application-mysql) databases.
